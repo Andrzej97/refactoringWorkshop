@@ -32,6 +32,7 @@ public:
 
     void receive(std::unique_ptr<Event> e) override;
 
+
 private:
     struct Segment
     {
@@ -49,6 +50,9 @@ private:
 
     Direction m_currentDirection;
     std::list<Segment> m_segments;
+public:
+      void ifLostEqFalse(bool & lost, Segment & newHead);
+      void loop(std::list<Segment> & m_segments, FoodResp & requestedFood, bool &requestedFoodCollidedWithSnake);
 };
 
 } // namespace Snake
