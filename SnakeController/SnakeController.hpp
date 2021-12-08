@@ -49,6 +49,9 @@ private:
 
     Direction m_currentDirection;
     std::list<Segment> m_segments;
+
+    void create_new_snake(bool lost, Segment newHead);
+    Segment setNewHead();
 };
 
 } // namespace Snake
