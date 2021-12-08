@@ -49,6 +49,14 @@ private:
 
     Direction m_currentDirection;
     std::list<Segment> m_segments;
+
+    void placeNewFood(int x, int y);
+    void clearOldFood (int x, int y);
+    bool foodColidedWithSnake(int x, int y);
+    bool isLost ();
+    void displaySegments(std::list<Segment>& m_segments);
+    void placeNewHead(Segment& newHead);
+
 };
 
 } // namespace Snake
