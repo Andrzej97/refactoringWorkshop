@@ -54,6 +54,7 @@ private:
     void handleTimerEvent();
     void directionEvent(Direction direction);
     void recFoodEvent(FoodInd f);
+    void reqFoodEvent(FoodResp requestedFood);
 };
 
 } // namespace Snake
