@@ -33,12 +33,21 @@ public:
     void receive(std::unique_ptr<Event> e) override;
 
 private:
+
     struct Segment
     {
         int x;
         int y;
         int ttl;
     };
+    
+    void moveSnake();
+    void setDirection(Snake::Direction direction);
+    void manageReceivedFood(Snake::FoodInd receivedFood);
+    void manageRequestedFood(Snake::FoodResp requestedFood);
+    bool checkIfSnakeRunIntoOwnSegment(Segment newHead);
+    void drawNewMovedSnake(bool lost, Segment newHead);
+    Segment setNewHead();
 
     IPort& m_displayPort;
     IPort& m_foodPort;
