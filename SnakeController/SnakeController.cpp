@@ -71,13 +71,25 @@ void Controller::receive(std::unique_ptr<Event> e)
         Segment const& currentHead = m_segments.front();
 
         Segment newHead;
-        newHead.x = currentHead.x + ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
-        newHead.y = currentHead.y + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+        int currentDir = ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+        newHead.x = currentHead.x + currentDir;
+        newHead.y = currentHead.y + not currentDir;
+        
         newHead.ttl = currentHead.ttl;
 
         bool lost = false;
 
         for (auto segment : m_segments) {
+            
+            if (not --segment.ttl) {
+                DisplayInd l_evt;
+                l_evt.x = segment.x;
+                l_evt.y = segment.y;
+                l_evt.value = Cell_FREE;
+                m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
+            }
+
+            
             if (segment.x == newHead.x and segment.y == newHead.y) {
                 m_scorePort.send(std::make_unique<EventT<LooseInd>>());
                 lost = true;
@@ -94,21 +106,8 @@ void Controller::receive(std::unique_ptr<Event> e)
                        newHead.y >= m_mapDimension.second) {
                 m_scorePort.send(std::make_unique<EventT<LooseInd>>());
                 lost = true;
-            } else {
-                for (auto &segment : m_segments) {
-                    if (not --segment.ttl) {
-                        DisplayInd l_evt;
-                        l_evt.x = segment.x;
-                        l_evt.y = segment.y;
-                        l_evt.value = Cell_FREE;
-
-                        m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
-                    }
-                }
-            }
-        }
-
-        if (not lost) {
+            } 
+        
             m_segments.push_front(newHead);
             DisplayInd placeNewHead;
             placeNewHead.x = newHead.x;
@@ -133,12 +132,13 @@ void Controller::receive(std::unique_ptr<Event> e)
             }
         } catch (std::bad_cast&) {
             try {
+                bool requestedFoodCollidedWithSnake = true;
                 auto receivedFood = *dynamic_cast<EventT<FoodInd> const&>(*e);
 
-                bool requestedFoodCollidedWithSnake = false;
                 for (auto const& segment : m_segments) {
                     if (segment.x == receivedFood.x and segment.y == receivedFood.y) {
-                        requestedFoodCollidedWithSnake = true;
+
+                        requestedFoodCollidedWithSnake = false;
                         break;
                     }
                 }
