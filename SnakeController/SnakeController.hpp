@@ -31,11 +31,11 @@ public:
     Controller& operator=(Controller const& p_rhs) = delete;
 
     void receive(std::unique_ptr<Event> e) override;
-    void fun(Segment const&, Segment) override;
-
+    bool fun(Segment const&, Segment) override;
+    void displ(Segment const & m_segments) override;
 private:
     struct Segment
-    {
+    {displ(Segment const & m_segments)
         int x;
         int y;
         int ttl;
