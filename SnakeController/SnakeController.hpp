@@ -49,6 +49,16 @@ private:
 
     Direction m_currentDirection;
     std::list<Segment> m_segments;
+
+    void changeDirection(char dir);
+    void lostCheck(bool& lost, const Segment& newHead);
+    void lostCheck1(bool& lost, const Segment& newHead);
+    void lostCheck2(bool& lost, const Segment& newHead);
+    void lostCheck3(const Segment& newHead);
+    void changeDirectionIfNecessary(const Event& e);
+
+    void foodCollisioncheck1(const Event& e);
+    void foodCollisioncheck2(const Event& e);
 };
 
 } // namespace Snake
