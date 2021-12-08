@@ -31,18 +31,25 @@ public:
     Controller& operator=(Controller const& p_rhs) = delete;
 
     void receive(std::unique_ptr<Event> e) override;
-
+    
 private:
-    struct Segment
+    struct Segment : public Ind
     {
-        int x;
-        int y;
+   
         int ttl;
     };
 
+    void placeNewObj(Ind& obj, Cell val);
+    void scorePort(Segment& newHead, bool& lost);
+    void mapOutOfCheck(Segment& newHead);
+    void foodColidateController(FoodInd receivedFood);
+    void foodRequestController(FoodResp requestedFood);
     IPort& m_displayPort;
     IPort& m_foodPort;
     IPort& m_scorePort;
+
+    //Ind m_foodPosition;
+    //Ind m_mapDimension;
 
     std::pair<int, int> m_mapDimension;
     std::pair<int, int> m_foodPosition;

@@ -33,21 +33,28 @@ enum Cell
     Cell_SNAKE
 };
 
-struct DisplayInd
+struct Ind{
+    Ind(int inpx, int inpy) : x(inpx), y(inpy){} 
+    Ind(){}
+    int x;
+    int y;
+};
+
+
+struct DisplayInd : public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x30;
 
-    int x;
-    int y;
     Cell value;
 };
 
-struct FoodInd
+
+
+struct FoodInd : public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x40;
 
-    int x;
-    int y;
+
 };
 
 struct FoodReq
@@ -55,12 +62,11 @@ struct FoodReq
     static constexpr std::uint32_t MESSAGE_ID = 0x41;
 };
 
-struct FoodResp
+struct FoodResp : public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x42;
 
-    int x;
-    int y;
+
 };
 
 struct ScoreInd
