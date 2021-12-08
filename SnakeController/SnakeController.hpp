@@ -49,6 +49,12 @@ private:
 
     Direction m_currentDirection;
     std::list<Segment> m_segments;
+
+    template<class T>
+    void foo(bool requestedFoodCollidedWithSnake, T requestedFood, Cell Cell_Food);
+
+    template<class T>
+    void forFun(T newHead, bool& requestedFoodCollidedWithSnake);
 };
 
 } // namespace Snake
