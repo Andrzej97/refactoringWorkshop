@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "IEventHandler.hpp"
+#include "EventT.hpp"
 #include "SnakeInterface.hpp"
 #include <stdexcept>
 
@@ -33,6 +34,8 @@ public:
     void receive(std::unique_ptr<Event> e) override;
 
 private:
+
+
     struct Segment
     {
         int x;
@@ -49,6 +52,12 @@ private:
 
     Direction m_currentDirection;
     std::list<Segment> m_segments;
+
+    bool checkLost(const Segment& checkHead);
+    bool checkLost1(const Segment& newHead,bool lost);
+    void checkLost2(const Segment& newHead,bool lost);
+    void requestedFoodFun(EventT<FoodResp> const& requestedFood);
+    void receivedFoodFun(EventT<FoodInd> const& receivedFood);
 };
 
 } // namespace Snake
