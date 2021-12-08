@@ -96,7 +96,7 @@ void Controller::displaySnake()
 }
 
 
-void Controller::handleTimerEvent()
+void Controller::recTimerEvent()
 {
     Segment const& currentHead = m_segments.front();
 
@@ -132,7 +132,7 @@ void Controller::handleTimerEvent()
     }
 }
 
-void Controller::directionEvent(Direction direction)
+void Controller::recDirectionEvent(Direction direction)
 {
     if ((m_currentDirection & 0b01) != (direction & 0b01)) {
         m_currentDirection = direction;
@@ -171,17 +171,19 @@ void Controller::recFoodEvent(FoodInd f)
 
 }
 
-
+bool Controller::isFoodSnakeCollision(FoodResp requestedFood)
+{
+    for (auto const& segment : m_segments) {
+        if (segment.x == requestedFood.x and segment.y == requestedFood.y) {
+            return true;
+        }
+    }
+    return false;
+}
 
 void Controller::reqFoodEvent(FoodResp requestedFood)
 {
-    bool requestedFoodCollidedWithSnake = false;
-    for (auto const& segment : m_segments) {
-        if (segment.x == requestedFood.x and segment.y == requestedFood.y) {
-            requestedFoodCollidedWithSnake = true;
-            break;
-        }
-    }
+    bool requestedFoodCollidedWithSnake = isFoodSnakeCollision(requestedFood);
 
     if (requestedFoodCollidedWithSnake) {
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
@@ -195,16 +197,16 @@ void Controller::reqFoodEvent(FoodResp requestedFood)
 
     m_foodPosition = std::make_pair(requestedFood.x, requestedFood.y);
 }
+
 void Controller::receive(std::unique_ptr<Event> e)
 {
     try {
-
         auto const& timerEvent = *dynamic_cast<EventT<TimeoutInd> const&>(*e);
-        handleTimerEvent();
+        recTimerEvent();
     } catch (std::bad_cast&) {
         try {
             auto direction = dynamic_cast<EventT<DirectionInd> const&>(*e)->direction;
-            directionEvent(direction);
+            recDirectionEvent(direction);
         } catch (std::bad_cast&) {
             try {
                 auto receivedFood = *dynamic_cast<EventT<FoodInd> const&>(*e);
@@ -212,9 +214,7 @@ void Controller::receive(std::unique_ptr<Event> e)
             } catch (std::bad_cast&) {
                 try {
                     auto requestedFood = *dynamic_cast<EventT<FoodResp> const&>(*e);
-
                     reqFoodEvent(requestedFood);
-
                 } catch (std::bad_cast&) {
                     throw UnexpectedEventException();
                 }
