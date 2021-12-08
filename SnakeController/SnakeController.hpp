@@ -49,6 +49,11 @@ private:
 
     Direction m_currentDirection;
     std::list<Segment> m_segments;
+    bool isLost(Segment newHead);
+    void displaySnake();
+    void handleTimerEvent();
+    void directionEvent(Direction direction);
+    void recFoodEvent(FoodInd f);
 };
 
 } // namespace Snake
