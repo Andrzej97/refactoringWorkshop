@@ -63,6 +63,42 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     }
 }
 
+int Controller::headUpdateX(int currenthead, Snake::Direction direction)
+    {
+    auto headToReturn = currenthead;
+    headToReturn = headToReturn + ((direction & 0b01) ? (direction & 0b10) ? 1 : -1 : 0);
+    return headToReturn;
+
+    }
+
+int Controller::headUpdateY(int currenthead, Snake::Direction direction)
+    {
+    auto headToReturn = currenthead;
+    headToReturn = headToReturn + (not (direction & 0b01) ? (direction & 0b10) ? 1 : -1 : 0);
+    return headToReturn;
+    }
+
+
+bool headOutOfDimensionsXY(int x, int y){
+    return (x< 0 or y < 0);
+
+}
+bool headOutOfDimiensionFirstX(int x,int mapDimensionX){
+return (x >= mapDimensionX);
+}
+
+bool headOutOfDimiensionFirstY(int y,int mapDimensionY){
+    return (y >= mapDimensionY);
+}
+
+bool outOfDimension(int x ,int y, int dimensionX, int dimensionY){
+
+    return (headOutOfDimensionsXY(x,y) or headOutOfDimiensionFirstX(x,dimensionX) or headOutOfDimiensionFirstY(y,dimensionY));
+}
+
+
+
+
 void Controller::receive(std::unique_ptr<Event> e)
 {
     try {
@@ -71,8 +107,10 @@ void Controller::receive(std::unique_ptr<Event> e)
         Segment const& currentHead = m_segments.front();
 
         Segment newHead;
-        newHead.x = currentHead.x + ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
-        newHead.y = currentHead.y + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+//        newHead.x = currentHead.x + ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+//        newHead.y = currentHead.y + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+        newHead.x = headUpdateX(currentHead.x, m_currentDirection);
+        newHead.y = headUpdateY(currentHead.y, m_currentDirection);
         newHead.ttl = currentHead.ttl;
 
         bool lost = false;
@@ -89,9 +127,10 @@ void Controller::receive(std::unique_ptr<Event> e)
             if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
                 m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
                 m_foodPort.send(std::make_unique<EventT<FoodReq>>());
-            } else if (newHead.x < 0 or newHead.y < 0 or
+            } else if (outOfDimension(newHead.x,newHead.y,m_mapDimension.first ,m_mapDimension.second))
+                     /*  newHead.x < 0 or newHead.y < 0 or
                        newHead.x >= m_mapDimension.first or
-                       newHead.y >= m_mapDimension.second) {
+                       newHead.y >= m_mapDimension.second)*/ {
                 m_scorePort.send(std::make_unique<EventT<LooseInd>>());
                 lost = true;
             } else {
@@ -191,5 +230,10 @@ void Controller::receive(std::unique_ptr<Event> e)
         }
     }
 }
+
+
+
+
+
 
 } // namespace Snake

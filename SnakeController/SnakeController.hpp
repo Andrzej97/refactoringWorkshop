@@ -31,6 +31,9 @@ public:
     Controller& operator=(Controller const& p_rhs) = delete;
 
     void receive(std::unique_ptr<Event> e) override;
+    int headUpdateX(int currenthead, Snake::Direction direction);
+    int headUpdateY(int currenthead, Snake::Direction direction);
+
 
 private:
     struct Segment
