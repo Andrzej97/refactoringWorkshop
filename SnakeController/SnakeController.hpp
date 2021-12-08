@@ -31,6 +31,10 @@ public:
     Controller& operator=(Controller const& p_rhs) = delete;
 
     void receive(std::unique_ptr<Event> e) override;
+    void makeNewPosition(std::unique_ptr<Event> e, Segment & newHead);
+    void changePosition(std::unique_ptr<Event> e, Segment & newHead);
+    void changingPosition(std::unique_ptr<Event> e, Segment & newHead);
+    void errorHandling(sstd::unique_ptr<Event> e);
 
 private:
     struct Segment
