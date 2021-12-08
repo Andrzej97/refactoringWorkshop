@@ -32,6 +32,38 @@ public:
 
     void receive(std::unique_ptr<Event> e) override;
 
+    int addToXCurrentHead();
+    int addToYCurrentHead();
+
+    template<typename T, typename U>
+    int isSegmentANewHead(T segment, U newHead);
+
+    template <typename T>
+    int checkFoodPosition(T newHead);
+
+    template <typename T>
+    int isNewHeadOutOfRange(T newHead);
+
+    template <typename T>
+    int isCurrentDirectionLeft(T direction);
+
+    template <typename T, typename U>
+    int isFoodCollidingWithSnake(T segment, U requestedFood);
+
+    void clearOldFood();
+
+    template<typename T>
+    void placeNewFood(T receivedFood);
+
+    template<typename T>
+    void placeNewHead(T newHead);
+
+    template<typename T>
+    void requestNewFoodIfCollided(bool requestedFoodCollidedWithSnake, T requestedFood);
+
+    template<typename T>
+    void ifNotLost(T newHead, bool* lost);
+
 private:
     struct Segment
     {
