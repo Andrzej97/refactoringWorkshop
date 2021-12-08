@@ -39,6 +39,7 @@ private:
         int ttl;
     };
 
+    void recivedTimout(TimeoutInd timerEvent);
     void placeNewObj(Ind& obj, Cell val);
     void scorePort(Segment& newHead, bool& lost);
     void mapOutOfCheck(Segment& newHead);

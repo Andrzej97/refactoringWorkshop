@@ -66,16 +66,8 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
 void Controller::receive(std::unique_ptr<Event> e)
 {
     try {
-        auto const& timerEvent = *dynamic_cast<EventT<TimeoutInd> const&>(*e);
-
-        Segment const& currentHead = m_segments.front();
-
-        Segment newHead;
-        newHead.x = currentHead.x + ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
-        newHead.y = currentHead.y + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
-        newHead.ttl = currentHead.ttl;
-
-        mapOutOfCheck(newHead);
+        recivedTimout(*dynamic_cast<EventT<TimeoutInd> const&>(*e));
+        
 
     } catch (std::bad_cast&) {
         try {
@@ -99,6 +91,18 @@ void Controller::receive(std::unique_ptr<Event> e)
             }
         }
     }
+}
+
+
+void Controller::recivedTimout(TimeoutInd timerEvent){
+    Segment const& currentHead = m_segments.front();
+
+    Segment newHead;
+    newHead.x = currentHead.x + ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+    newHead.y = currentHead.y + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+    newHead.ttl = currentHead.ttl;
+
+    mapOutOfCheck(newHead);
 }
 
 void Controller::placeNewObj(Ind& obj, Cell val){
@@ -157,6 +161,8 @@ void Controller::mapOutOfCheck(Segment& newHead){
         }
 }
 
+
+
 void Controller::foodColidateController(FoodInd receivedFood){
     bool requestedFoodCollidedWithSnake = false;
     for (auto const& segment : m_segments) {
@@ -194,5 +200,7 @@ void Controller::foodRequestController(FoodResp requestedFood){
 
     m_foodPosition = std::make_pair(requestedFood.x, requestedFood.y);
 }
+
+
 
 } // namespace Snake
