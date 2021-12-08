@@ -63,37 +63,36 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     }
 }
 
-void Controller::receive(std::unique_ptr<Event> e)
+void Controller::setNewHeadPosition(const Segment& currentHead, Segment& newHead)
 {
-    try {
-        auto const& timerEvent = *dynamic_cast<EventT<TimeoutInd> const&>(*e);
+    newHead.x = currentHead.x + ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+    newHead.y = currentHead.y + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+    newHead.ttl = currentHead.ttl;
+}
 
-        Segment const& currentHead = m_segments.front();
-
-        Segment newHead;
-        newHead.x = currentHead.x + ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
-        newHead.y = currentHead.y + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
-        newHead.ttl = currentHead.ttl;
-
-        bool lost = false;
-
-        for (auto segment : m_segments) {
+bool Controller::checkSnakeBitesOwnTail(const Segment& newHead)
+{
+    for (auto segment : m_segments) {
             if (segment.x == newHead.x and segment.y == newHead.y) {
                 m_scorePort.send(std::make_unique<EventT<LooseInd>>());
-                lost = true;
-                break;
+                return true;
             }
         }
+    return false;
+}
 
-        if (not lost) {
+bool Controller::checkGameState(const Segment& newHead)
+{
+    if (not checkSnakeBitesOwnTail(newHead)) {
             if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
                 m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
                 m_foodPort.send(std::make_unique<EventT<FoodReq>>());
+                return false;
             } else if (newHead.x < 0 or newHead.y < 0 or
                        newHead.x >= m_mapDimension.first or
                        newHead.y >= m_mapDimension.second) {
                 m_scorePort.send(std::make_unique<EventT<LooseInd>>());
-                lost = true;
+                return true;
             } else {
                 for (auto &segment : m_segments) {
                     if (not --segment.ttl) {
@@ -105,10 +104,14 @@ void Controller::receive(std::unique_ptr<Event> e)
                         m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
                     }
                 }
+                return false;
             }
         }
+}
 
-        if (not lost) {
+void Controller::updateSnakeState(bool lost, const Segment& newHead)
+{
+    if (not lost) {
             m_segments.push_front(newHead);
             DisplayInd placeNewHead;
             placeNewHead.x = newHead.x;
@@ -124,6 +127,22 @@ void Controller::receive(std::unique_ptr<Event> e)
                     [](auto const& segment){ return not (segment.ttl > 0); }),
                 m_segments.end());
         }
+}
+
+void Controller::receive(std::unique_ptr<Event> e)
+{
+    try {
+        auto const& timerEvent = *dynamic_cast<EventT<TimeoutInd> const&>(*e);
+
+        Segment const& currentHead = m_segments.front();
+
+        Segment newHead;
+        setNewHeadPosition(currentHead, newHead);
+
+        bool lost = checkSnakeBitesOwnTail(newHead) || checkGameState(newHead);
+
+        updateSnakeState(lost, newHead);
+
     } catch (std::bad_cast&) {
         try {
             auto direction = dynamic_cast<EventT<DirectionInd> const&>(*e)->direction;
