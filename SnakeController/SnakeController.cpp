@@ -62,7 +62,36 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
         throw ConfigurationError();
     }
 }
+bool Controller::fun(Segment const& currentHead, Segment newHead)
+{
+    currentHead = m_segments.front();
+    bool lost = false;
+    for (auto segment : m_segments) {
+        if (segment.x == newHead.x and segment.y == newHead.y) {
+            m_scorePort.send(std::make_unique<EventT<LooseInd>>());
+            lost = true;
+            break;
+        }
 
+
+}
+    return lost;
+
+}
+void Controller::displ(Segment const & m_segments){
+
+    for (auto &segment : m_segments) {
+        if (not --segment.ttl) {
+            DisplayInd l_evt;
+            l_evt.x = segment.x;
+            l_evt.y = segment.y;
+            l_evt.value = Cell_FREE;
+
+            m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
+        }
+
+}
+}
 void Controller::receive(std::unique_ptr<Event> e)
 {
     try {
@@ -75,38 +104,15 @@ void Controller::receive(std::unique_ptr<Event> e)
         newHead.y = currentHead.y + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
         newHead.ttl = currentHead.ttl;
 
-        bool lost = false;
-
-        for (auto segment : m_segments) {
+        //bool lost = false;
+        bool lost = fun(currentHead, newHead);
+       /* for (auto segment : m_segments) {
             if (segment.x == newHead.x and segment.y == newHead.y) {
                 m_scorePort.send(std::make_unique<EventT<LooseInd>>());
                 lost = true;
                 break;
             }
-        }
-
-        if (not lost) {
-            if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
-                m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
-                m_foodPort.send(std::make_unique<EventT<FoodReq>>());
-            } else if (newHead.x < 0 or newHead.y < 0 or
-                       newHead.x >= m_mapDimension.first or
-                       newHead.y >= m_mapDimension.second) {
-                m_scorePort.send(std::make_unique<EventT<LooseInd>>());
-                lost = true;
-            } else {
-                for (auto &segment : m_segments) {
-                    if (not --segment.ttl) {
-                        DisplayInd l_evt;
-                        l_evt.x = segment.x;
-                        l_evt.y = segment.y;
-                        l_evt.value = Cell_FREE;
-
-                        m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
-                    }
-                }
-            }
-        }
+        } */
 
         if (not lost) {
             m_segments.push_front(newHead);
@@ -123,29 +129,72 @@ void Controller::receive(std::unique_ptr<Event> e)
                     m_segments.end(),
                     [](auto const& segment){ return not (segment.ttl > 0); }),
                 m_segments.end());
+            if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
+                m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
+                m_foodPort.send(std::make_unique<EventT<FoodReq>>());
+            }
+            else if (newHead.x < 0 or newHead.y < 0 or
+                       newHead.x >= m_mapDimension.first or
+                       newHead.y >= m_mapDimension.second) {
+                m_scorePort.send(std::make_unique<EventT<LooseInd>>());
+                lost = true;
+            }
+            else {
+                displ(m_segments);
+               /*
+                for (auto &segment : m_segments) {
+                    if (not --segment.ttl) {
+                        DisplayInd l_evt;
+                        l_evt.x = segment.x;
+                        l_evt.y = segment.y;
+                        l_evt.value = Cell_FREE;
+
+                        m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
+                    }
+                } */
+            }
         }
+
+  /*     if (not lost) {
+            m_segments.push_front(newHead);
+            DisplayInd placeNewHead;
+            placeNewHead.x = newHead.x;
+            placeNewHead.y = newHead.y;
+            placeNewHead.value = Cell_SNAKE;
+
+            m_displayPort.send(std::make_unique<EventT<DisplayInd>>(placeNewHead));
+
+            m_segments.erase(
+                std::remove_if(
+                    m_segments.begin(),
+                    m_segments.end(),
+                    [](auto const& segment){ return not (segment.ttl > 0); }),
+                m_segments.end());
+
+        } */
     } catch (std::bad_cast&) {
         try {
             auto direction = dynamic_cast<EventT<DirectionInd> const&>(*e)->direction;
 
-            if ((m_currentDirection & 0b01) != (direction & 0b01)) {
+           // if ((m_currentDirection & 0b01) != (direction & 0b01)) {
                 m_currentDirection = direction;
-            }
+            //}
         } catch (std::bad_cast&) {
             try {
                 auto receivedFood = *dynamic_cast<EventT<FoodInd> const&>(*e);
 
                 bool requestedFoodCollidedWithSnake = false;
                 for (auto const& segment : m_segments) {
-                    if (segment.x == receivedFood.x and segment.y == receivedFood.y) {
+                    //if (segment.x == receivedFood.x and segment.y == receivedFood.y) {
                         requestedFoodCollidedWithSnake = true;
-                        break;
-                    }
+                    //    break;
+                   // }
                 }
 
                 if (requestedFoodCollidedWithSnake) {
                     m_foodPort.send(std::make_unique<EventT<FoodReq>>());
-                } else {
+                }
+                else {
                     DisplayInd clearOldFood;
                     clearOldFood.x = m_foodPosition.first;
                     clearOldFood.y = m_foodPosition.second;
@@ -175,7 +224,8 @@ void Controller::receive(std::unique_ptr<Event> e)
 
                     if (requestedFoodCollidedWithSnake) {
                         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
-                    } else {
+                    }
+                    else {
                         DisplayInd placeNewFood;
                         placeNewFood.x = requestedFood.x;
                         placeNewFood.y = requestedFood.y;
