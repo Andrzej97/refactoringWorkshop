@@ -37,7 +37,7 @@ private:
     void handleDirectionChange(const DirectionInd&);
     void handleFoodPositionChange(const FoodInd& receivedFood);
     void handleNewFood(const FoodResp& requestedFood);
-
+    void handlePause(const PauseInd&);
     struct Segment
     {
         int x;
@@ -60,7 +60,7 @@ private:
     IPort& m_displayPort;
     IPort& m_foodPort;
     IPort& m_scorePort;
-
+    bool pause;
     std::pair<int, int> m_mapDimension;
     std::pair<int, int> m_foodPosition;
 
