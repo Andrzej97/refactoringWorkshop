@@ -5,6 +5,7 @@
 namespace Snake
 {
 
+
 enum Direction
 {
     Direction_UP    = 0b00,
