@@ -33,14 +33,7 @@ public:
     void receive(std::unique_ptr<Event> e) override;
 
 private:
-    struct Segment
-    {
-        int x;
-        int y;
-        int ttl;
-    };
-
-    void setNewHeadPosition(const Segment& currentHead, Segment& newHead);
+    Segment setNewHeadPosition(const Segment& currentHead);
     bool checkSnakeBitesOwnTail(const Segment& newHead);
     bool checkGameState(const Segment& newHead);
     void updateSnakeState(bool lost, const Segment& newHead);
