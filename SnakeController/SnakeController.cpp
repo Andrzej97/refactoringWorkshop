@@ -113,7 +113,6 @@ void Controller::handleDirectionChange(const DirectionInd& directionInd)
 
 void Controller::handleFoodPositionChange(const FoodInd& receivedFood)
 {
-
     bool requestedFoodCollidedWithSnake = false;
     for (auto const& segment : m_segments) {
         if (segment.x == receivedFood.x and segment.y == receivedFood.y) {
@@ -135,7 +134,6 @@ void Controller::handleFoodPositionChange(const FoodInd& receivedFood)
 
 void Controller::handleNewFood(const FoodResp& requestedFood)
 {
-
     bool requestedFoodCollidedWithSnake = false;
     for (auto const& segment : m_segments) {
         if (segment.x == requestedFood.x and segment.y == requestedFood.y) {
