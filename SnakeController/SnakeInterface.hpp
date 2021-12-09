@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "Event.hpp"
 
 namespace Snake
 {
@@ -21,7 +22,7 @@ struct DirectionInd
 };
 
 
-struct TimeoutInd
+struct TimeoutInd : public Event
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x20;
 };

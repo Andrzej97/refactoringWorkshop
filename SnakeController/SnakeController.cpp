@@ -63,7 +63,7 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     }
 }
 
-void Controller::handleTimePassed(const TimeoutInd&)
+void Controller::handleTimePassed(const Event&)
 {
     Segment newHead = getNewHead();
 
@@ -216,7 +216,7 @@ Controller::Segment Controller::getNewHead() const
 void Controller::receive(std::unique_ptr<Event> e)
 {
     try {
-        handleTimePassed(*dynamic_cast<EventT<TimeoutInd> const&>(*e));
+        handleTimePassed(*e);
     } catch (std::bad_cast&) {
         try {
             handleDirectionChange(*dynamic_cast<EventT<DirectionInd> const&>(*e));
