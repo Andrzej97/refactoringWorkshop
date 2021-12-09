@@ -49,6 +49,14 @@ private:
 
     Direction m_currentDirection;
     std::list<Segment> m_segments;
+
+    void recieveTimeoutInd(std::unique_ptr<Event>& e);
+    void recieveDirectionInd(std::unique_ptr<Event>& e);
+    void recieveFoodInd(std::unique_ptr<Event>& e);
+    void recieveFoodResp(std::unique_ptr<Event>& e);
+    bool hasBitSelf(Segment NewHead);
+    bool whenNotLost1(Segment newHead);
+    void whenNotLost2(Segment newHead);
 };
 
 } // namespace Snake
