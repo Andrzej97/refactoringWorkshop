@@ -56,6 +56,8 @@ private:
 
     void cleanNotExistingSnakeSegments();
 
+    void Pause(const PauseInd&);
+
 
     IPort& m_displayPort;
     IPort& m_foodPort;
