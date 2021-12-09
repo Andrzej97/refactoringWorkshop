@@ -7,7 +7,13 @@
 #include "IPort.hpp"
 
 namespace Snake
+
+
+
 {
+
+  
+
 ConfigurationError::ConfigurationError()
     : std::logic_error("Bad configuration of Snake::Controller.")
 {}
@@ -213,19 +219,30 @@ Controller::Segment Controller::getNewHead() const
     return newHead;
 }
 
-void Controller::receive(std::unique_ptr<Event> e)
+void Controller::receive(std::unique_ptr<Event>  e)
 {
     try {
-        handleTimePassed(*dynamic_cast<EventT<TimeoutInd> const&>(*e));
+        e->getMessageId();
+        //if (typeid(e) == typeid(TimeoutInd))
+        if (TimeoutInd::MESSAGE_ID != e->getMessageId())
+            throw std::bad_cast();
+        handleTimePassed(*static_cast<EventT<TimeoutInd>const&>(*e)); //*dynamic_cast<EventT<TimeoutInd>const&>
+        //else //throw std::bad_cast;
     } catch (std::bad_cast&) {
         try {
-            handleDirectionChange(*dynamic_cast<EventT<DirectionInd> const&>(*e));
+            if (DirectionInd::MESSAGE_ID != e->getMessageId())
+                throw std::bad_cast();
+            handleDirectionChange(*static_cast<EventT<DirectionInd> const&>(*e));
         } catch (std::bad_cast&) {
             try {
-                handleFoodPositionChange(*dynamic_cast<EventT<FoodInd> const&>(*e));
+                if (FoodInd::MESSAGE_ID != e->getMessageId())
+                    throw std::bad_cast();
+                handleFoodPositionChange(*static_cast<EventT<FoodInd> const&>(*e));
             } catch (std::bad_cast&) {
                 try {
-                    handleNewFood(*dynamic_cast<EventT<FoodResp> const&>(*e));
+                    if (FoodResp::MESSAGE_ID != e->getMessageId())
+                        throw std::bad_cast();
+                    handleNewFood(*static_cast<EventT<FoodResp> const&>(*e));
                 } catch (std::bad_cast&) {
                     throw UnexpectedEventException();
                 }
