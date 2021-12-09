@@ -67,17 +67,17 @@ void Controller::handleTimePassed(const TimeoutInd&)
 {
     Segment newHead = getNewHead();
 
-    if(doesCollideWithSnake(newHead))
+    if(doesCollideWithSnake(newHead) && pause == false)
     {
         notifyAboutFailure();
         return;
     }
-    if(doesCollideWithFood(newHead))
+    if(doesCollideWithFood(newHead) && pause == false)
     {
         m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
     }
-    else if (doesCollideWithWall(newHead))
+    else if (doesCollideWithWall(newHead) && pause == false)
     {
         notifyAboutFailure();
         return;
@@ -101,7 +101,7 @@ void Controller::handleDirectionChange(const DirectionInd& directionInd)
 {
     auto direction = directionInd.direction;
 
-    if ((m_currentDirection & 0b01) != (direction & 0b01)) {
+    if (((m_currentDirection & 0b01) != (direction & 0b01)) && pause == false) {
         m_currentDirection = direction;
     }
 }
@@ -110,7 +110,7 @@ void Controller::handleFoodPositionChange(const FoodInd& receivedFood)
 {
     bool requestedFoodCollidedWithSnake = false;
     for (auto const& segment : m_segments) {
-        if (segment.x == receivedFood.x and segment.y == receivedFood.y) {
+        if ((segment.x == receivedFood.x and segment.y == receivedFood.y) && pause == false){
             requestedFoodCollidedWithSnake = true;
             break;
         }
@@ -131,7 +131,7 @@ void Controller::handleNewFood(const FoodResp& requestedFood)
 {
     bool requestedFoodCollidedWithSnake = false;
     for (auto const& segment : m_segments) {
-        if (segment.x == requestedFood.x and segment.y == requestedFood.y) {
+        if ((segment.x == requestedFood.x and segment.y == requestedFood.y) && pause == false) {
             requestedFoodCollidedWithSnake = true;
             break;
         }
@@ -153,7 +153,7 @@ void Controller::handleNewFood(const FoodResp& requestedFood)
 bool Controller::doesCollideWithSnake(const Controller::Segment &newSegment) const
 {
     for (auto segment : m_segments) {
-        if (segment.x == newSegment.x and segment.y == newSegment.y) {
+        if ((segment.x == newSegment.x and segment.y == newSegment.y) && pause == false) {
             return true;
         }
     }
@@ -184,11 +184,15 @@ void Controller::repaintTile(const Controller::Segment &position, Cell type)
 
 void Controller::repaintTile(unsigned int x, unsigned int y, Cell type)
 {
+    if (pause == false)
+    {
     DisplayInd indication{};
     indication.x = x;
     indication.y = y;
     indication.value = type;
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(indication));
+    }
+
 }
 
 void Controller::cleanNotExistingSnakeSegments()
@@ -217,6 +221,7 @@ void Controller::receive(std::unique_ptr<Event> e)
 {
     switch(e->getMessageId())
     {
+        case PauseInd::MESSAGE_ID: return pauseEvent(*static_cast<EventT<PauseInd> const&>(*e));
         case TimeoutInd::MESSAGE_ID: return handleTimePassed(*static_cast<EventT<TimeoutInd> const&>(*e));
         case DirectionInd::MESSAGE_ID: return handleDirectionChange(*static_cast<EventT<DirectionInd> const&>(*e));
         case FoodInd::MESSAGE_ID: return handleFoodPositionChange(*static_cast<EventT<FoodInd> const&>(*e));
@@ -224,5 +229,11 @@ void Controller::receive(std::unique_ptr<Event> e)
         default: throw UnexpectedEventException();
     };
 }
+
+void Controller::pauseEvent(const PauseInd&)
+{
+    pause = !pause;
+}
+
 
 } // namespace Snake
