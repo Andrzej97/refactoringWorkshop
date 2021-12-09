@@ -215,7 +215,7 @@ Controller::Segment Controller::getNewHead() const
 
 void Controller::receive(std::unique_ptr<Event> e)
 {
-    try {
+    /*try {
         handleTimePassed(*dynamic_cast<EventT<TimeoutInd> const&>(*e));
     } catch (std::bad_cast&) {
         try {
@@ -231,6 +231,24 @@ void Controller::receive(std::unique_ptr<Event> e)
                 }
             }
         }
+    }*/
+    std::uint32_t ID = e->getMessageId();
+
+    switch(ID)
+    {
+        case 0x20:
+            (*static_cast<EventT<TimeoutInd> const&>(*e));
+            handleTimePassed(e);
+            break;
+        case 0x10:
+            handleDirectionChange(e);
+            break;
+        case 0x40:
+            handleFoodPositionChange(e);
+            break;
+        case 0x30:
+            handleNewFood(e);
+            break;
     }
 }
 
