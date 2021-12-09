@@ -31,6 +31,7 @@ public:
     T& operator*() noexcept { return *m_payload; }
     T const& operator*() const noexcept { return *m_payload; }
 
+
 private:
     std::unique_ptr<T> m_payload;
 };
