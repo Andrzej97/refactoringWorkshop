@@ -56,7 +56,6 @@ private:
 
     void cleanNotExistingSnakeSegments();
 
-    void Pause(const PauseInd&);
 
 
     IPort& m_displayPort;
@@ -68,6 +67,7 @@ private:
 
     Direction m_currentDirection;
     std::list<Segment> m_segments;
+    bool isPaused = false;
 };
 
 } // namespace Snake
