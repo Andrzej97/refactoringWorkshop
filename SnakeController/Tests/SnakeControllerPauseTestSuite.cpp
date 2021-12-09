@@ -117,6 +117,7 @@ TEST_F(PauseSnakeTest, whenPausedFoodPositionChangeShouldBeStillProcessed)
 
     sut->receive(te.clone());
 
+
     EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(4, 2, Cell_SNAKE)));
     EXPECT_CALL(scorePortMock, send_rvr(AnyScoreInd()));
     EXPECT_CALL(foodPortMock, send_rvr(AnyFoodReq()));
