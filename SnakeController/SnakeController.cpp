@@ -215,7 +215,16 @@ Controller::Segment Controller::getNewHead() const
 
 void Controller::receive(std::unique_ptr<Event> e)
 {
-    try {
+    switch(e->getMessageId())
+    {
+        case TimeoutInd::MESSAGE_ID: return handleTimePassed(*static_cast<EventT<TimeoutInd>const>(*e));
+        case DirectionInd::MESSAGE_ID: return handleDirectionChange(*static_cast<EventT<DirectionInd>const>(*e));
+        case FoodInd::MESSAGE_ID: return handleFoodPositionChange(*static_cast<EventT<FoodInd>const>(*e));
+        case FoodResp::MESSAGE_ID: return handleNewFood(*static_cast<EventT<FoodResp>const>(*e));
+    }
+    ;
+    //możemy użyć static casta zamiast try blocków
+    /*try {
         handleTimePassed(*dynamic_cast<EventT<TimeoutInd> const&>(*e));
     } catch (std::bad_cast&) {
         try {
@@ -231,7 +240,7 @@ void Controller::receive(std::unique_ptr<Event> e)
                 }
             }
         }
-    }
+    }*/
 }
 
 } // namespace Snake
