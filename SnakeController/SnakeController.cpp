@@ -63,9 +63,9 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     }
 }
 
-void Controller::handleTimePassed(bool paused, const TimeoutInd&)
+void Controller::handleTimePassed(const TimeoutInd&)
 {
-    if(paused)
+    if(m_paused)
     {
         return;
     }
@@ -101,9 +101,9 @@ void Controller::handleTimePassed(bool paused, const TimeoutInd&)
     cleanNotExistingSnakeSegments();
 }
 
-void Controller::handleDirectionChange(bool paused, const DirectionInd& directionInd)
+void Controller::handleDirectionChange(const DirectionInd& directionInd)
 {
-    if(paused)
+    if(m_paused)
     {
         return;
     }
@@ -231,8 +231,8 @@ void Controller::receive(std::unique_ptr<Event> e)
     switch(e->getMessageId())
     {
         case PauseInd::MESSAGE_ID: m_paused = pauseSnake(*static_cast<EventT<PauseInd> const&>(*e)); break;
-        case TimeoutInd::MESSAGE_ID: return handleTimePassed(m_paused, *static_cast<EventT<TimeoutInd> const&>(*e));
-        case DirectionInd::MESSAGE_ID: return handleDirectionChange(m_paused, *static_cast<EventT<DirectionInd> const&>(*e));
+        case TimeoutInd::MESSAGE_ID: return handleTimePassed(*static_cast<EventT<TimeoutInd> const&>(*e));
+        case DirectionInd::MESSAGE_ID: return handleDirectionChange(*static_cast<EventT<DirectionInd> const&>(*e));
         case FoodInd::MESSAGE_ID: return handleFoodPositionChange(*static_cast<EventT<FoodInd> const&>(*e));
         case FoodResp::MESSAGE_ID: return handleNewFood(*static_cast<EventT<FoodResp> const&>(*e));
         default: throw UnexpectedEventException();
