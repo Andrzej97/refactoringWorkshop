@@ -99,10 +99,13 @@ void Controller::handleTimePassed(const TimeoutInd&)
 
 void Controller::handleDirectionChange(const DirectionInd& directionInd)
 {
-    auto direction = directionInd.direction;
+    if(!isPaused)
+    {
+        auto direction = directionInd.direction;
 
-    if ((m_currentDirection & 0b01) != (direction & 0b01)) {
-        m_currentDirection = direction;
+        if ((m_currentDirection & 0b01) != (direction & 0b01)) {
+            m_currentDirection = direction;
+        }
     }
 }
 
@@ -174,7 +177,10 @@ bool Controller::doesCollideWithFood(const Controller::Segment &newHead) const
 
 void Controller::notifyAboutFailure()
 {
-    m_scorePort.send(std::make_unique<EventT<LooseInd>>());
+    if(!isPaused)
+    {
+        m_scorePort.send(std::make_unique<EventT<LooseInd>>());
+    }
 }
 
 void Controller::repaintTile(const Controller::Segment &position, Cell type)
@@ -213,6 +219,12 @@ Controller::Segment Controller::getNewHead() const
     return newHead;
 }
 
+void Controller::pause()
+{
+    isPaused = true;
+}
+
+
 void Controller::receive(std::unique_ptr<Event> e)
 {
     switch(e->getMessageId())
@@ -221,6 +233,7 @@ void Controller::receive(std::unique_ptr<Event> e)
         case DirectionInd::MESSAGE_ID: return handleDirectionChange(*static_cast<EventT<DirectionInd> const&>(*e));
         case FoodInd::MESSAGE_ID: return handleFoodPositionChange(*static_cast<EventT<FoodInd> const&>(*e));
         case FoodResp::MESSAGE_ID: return handleNewFood(*static_cast<EventT<FoodResp> const&>(*e));
+        case PauseInd::MESSAGE_ID: return pause();
         default: throw UnexpectedEventException();
     };
 }
