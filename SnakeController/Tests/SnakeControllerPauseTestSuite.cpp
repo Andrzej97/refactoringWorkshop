@@ -33,18 +33,19 @@ struct PauseSnakeTest : Test
 
 TEST_F(PauseSnakeTest, pauseEventShouldNotBeUnexpected)
 {
-    configureSUT(ConfigBuilder().build());
+    configureSUT(ConfigBuilder().setSnake({ConfigBuilder::Point{20, 20}}).build());
 
     sut->receive(pauseEvent.clone());
-    sut->receive(pauseEvent.clone());
+  //  sut->receive(pauseEvent.clone());
 }
 
 TEST_F(PauseSnakeTest, whenPausedSnakeShouldNotMove)
 {
-    configureSUT(ConfigBuilder().setDirection(Direction_RIGHT).setSnake({ConfigBuilder::Point{20, 20}}).build());
+    configureSUT(ConfigBuilder().setDirection(Direction_RIGHT).setSnake({ConfigBuilder::Point{20, 20}}).build()) ;
 
     sut->receive(pauseEvent.clone());
     sut->receive(te.clone());
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(20, 20, Cell_FREE)));
 }
 
 TEST_F(PauseSnakeTest, whenNoLongerPausedSnakeShouldMoveAgain)
@@ -52,18 +53,18 @@ TEST_F(PauseSnakeTest, whenNoLongerPausedSnakeShouldMoveAgain)
     configureSUT(ConfigBuilder().setDirection(Direction_RIGHT).setSnake({ConfigBuilder::Point{20, 20}}).build());
 
     sut->receive(pauseEvent.clone());
-    sut->receive(pauseEvent.clone());
+    sut->receive(te.clone());
 
     EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(20, 20, Cell_FREE)));
     EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(21, 20, Cell_SNAKE)));
 
-    sut->receive(te.clone());
+
 }
 
 TEST_F(PauseSnakeTest, whenPausedSnakeShouldNotHitTheWall)
 {
-    configureSUT(ConfigBuilder().setWorldSize(5,5).setFood(1,1)
-                 .setDirection(Direction_RIGHT).setSnake({ConfigBuilder::Point{5, 5}}).build());
+    configureSUT(ConfigBuilder().setWorldSize(10,10).setFood(1,1)
+                 .setDirection(Direction_RIGHT).setSnake({ConfigBuilder::Point{3, 3}}).build());
 
     sut->receive(pauseEvent.clone());
     sut->receive(te.clone());
