@@ -65,6 +65,11 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
 
 void Controller::handleTimePassed(const TimeoutInd&)
 {
+    if(m_paused)
+    {
+        return;
+    }
+
     Segment newHead = getNewHead();
 
     if(doesCollideWithSnake(newHead))
@@ -99,6 +104,10 @@ void Controller::handleTimePassed(const TimeoutInd&)
 
 void Controller::handleDirectionChange(const DirectionInd& directionInd)
 {
+    if(m_paused)
+    {
+        return;
+    }
     auto direction = directionInd.direction;
 
     if ((m_currentDirection & 0b01) != (direction & 0b01)) {
@@ -148,6 +157,11 @@ void Controller::handleNewFood(const FoodResp& requestedFood)
     }
 
     m_foodPosition = std::make_pair(requestedFood.x, requestedFood.y);
+}
+
+void Controller::pauseSnake()
+{
+    m_paused = !m_paused;
 }
 
 bool Controller::doesCollideWithSnake(const Controller::Segment &newSegment) const
@@ -217,6 +231,7 @@ void Controller::receive(std::unique_ptr<Event> e)
 {
     switch(e->getMessageId())
     {
+        case PauseInd::MESSAGE_ID: return pauseSnake();
         case TimeoutInd::MESSAGE_ID: return handleTimePassed(*static_cast<EventT<TimeoutInd> const&>(*e));
         case DirectionInd::MESSAGE_ID: return handleDirectionChange(*static_cast<EventT<DirectionInd> const&>(*e));
         case FoodInd::MESSAGE_ID: return handleFoodPositionChange(*static_cast<EventT<FoodInd> const&>(*e));
