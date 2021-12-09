@@ -63,6 +63,7 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     }
 }
 
+
 void Controller::handleTimePassed(const TimeoutInd&)
 {
     Segment newHead = getNewHead();
@@ -216,16 +217,31 @@ Controller::Segment Controller::getNewHead() const
 void Controller::receive(std::unique_ptr<Event> e)
 {
     try {
-        handleTimePassed(*dynamic_cast<EventT<TimeoutInd> const&>(*e));
+
+//void Controller::handleTimePassed(const TimeoutInd&)
+
+        TimeoutInd a;
+        if(e->getMessageId() == a.MESSAGE_ID )handleTimePassed(a);
+
+
     } catch (std::bad_cast&) {
         try {
-            handleDirectionChange(*dynamic_cast<EventT<DirectionInd> const&>(*e));
+            DirectionInd  directionInd;
+            if(e->getMessageId() == directionInd.MESSAGE_ID )handleTimePassed(directionInd);
+            //handleDirectionChange(*dynamic_cast<EventT<DirectionInd> const&>(*e));
         } catch (std::bad_cast&) {
             try {
-                handleFoodPositionChange(*dynamic_cast<EventT<FoodInd> const&>(*e));
+                FoodInd foodInd;
+                if(e->getMessageId() == foodInd.MESSAGE_ID)handleFoodPositionChange(foodInd);
+                //handleFoodPositionChange(*dynamic_cast<EventT<FoodInd> const&>(*e));
             } catch (std::bad_cast&) {
                 try {
-                    handleNewFood(*dynamic_cast<EventT<FoodResp> const&>(*e));
+
+                    FoodResp foodResp;
+                    if(e->getMessageId() == foodResp.MESSAGE_ID )handleTimePassed(foodResp);
+                    //handleNewFood(*dynamic_cast<EventT<FoodResp> const&>(*e));
+
+
                 } catch (std::bad_cast&) {
                     throw UnexpectedEventException();
                 }
