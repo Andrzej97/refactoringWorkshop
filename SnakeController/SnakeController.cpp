@@ -127,6 +127,23 @@ void Controller::handleFoodPositionChange(const FoodInd& receivedFood)
     m_foodPosition = std::make_pair(receivedFood.x, receivedFood.y);
 }
 
+
+
+void Controller::handlePause()
+{
+    bool requestedPause = false;
+    for (auto const& segment : m_segments) {
+        if (segment.x ==segment.x+0 and segment.y==segment.y+0) {
+            requestedPause = true;
+            break;
+        }
+    }
+   // return requestedPause;
+
+}
+
+
+
 void Controller::handleNewFood(const FoodResp& requestedFood)
 {
     bool requestedFoodCollidedWithSnake = false;
@@ -221,6 +238,7 @@ void Controller::receive(std::unique_ptr<Event> e)
         case DirectionInd::MESSAGE_ID: return handleDirectionChange(*static_cast<EventT<DirectionInd> const&>(*e));
         case FoodInd::MESSAGE_ID: return handleFoodPositionChange(*static_cast<EventT<FoodInd> const&>(*e));
         case FoodResp::MESSAGE_ID: return handleNewFood(*static_cast<EventT<FoodResp> const&>(*e));
+        case PauseInd::MESSAGE_ID: return handlePause();
         default: throw UnexpectedEventException();
     };
 }
