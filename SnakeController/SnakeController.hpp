@@ -41,23 +41,33 @@ private:
     IPort& m_foodPort;
     IPort& m_scorePort;
 
-    std::unique_ptr<World> m_world;
-    std::unique_ptr<Segments> m_segments;
+
+    Point m_mapDimension;
+    Point m_foodPosition;
+
+    std::list<Point> m_segments;
+    Direction m_currentDirection;
+
 
     void handleTimeoutInd();
     void handleDirectionInd(std::unique_ptr<Event>);
     void handleFoodInd(std::unique_ptr<Event>);
     void handleFoodResp(std::unique_ptr<Event>);
-    void handlePauseInd(std::unique_ptr<Event>);
+    void handlePauseInd();
 
-    void updateSegmentsIfSuccessfullMove(int x, int y);
-    void addHeadSegment(int x, int y);
-    void removeTailSegmentIfNotScored(int x, int y);
+    bool isSegmentAtPosition(Point cord) const;
+    Point calculateNewHead() const;
+    void updateSegmentsIfSuccessfullMove(Point const& newHead);
+    void addHeadSegment(Point const& newHead);
+    void removeTailSegmentIfNotScored(Point const& newHead);
     void removeTailSegment();
 
-    void updateFoodPosition(int x, int y, std::function<void()> clearPolicy);
+    bool isPositionOutsideMap(Point cord) const;
+
+    void updateFoodPosition(Point& cord, std::function<void()> clearPolicy);
+
     void sendClearOldFood();
-    void sendPlaceNewFood(int x, int y);
+    void sendPlaceNewFood(Point& cord);
 
     bool m_paused;
 };
