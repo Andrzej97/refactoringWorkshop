@@ -38,16 +38,10 @@ private:
     IPort& m_foodPort;
     IPort& m_scorePort;
 
-    std::pair<int, int> m_mapDimension;
-    std::pair<int, int> m_foodPosition;
+    Ind m_mapDimension;
+    Ind m_foodPosition;
 
-    struct Segment
-    {
-        int x;
-        int y;
-    };
-
-    std::list<Segment> m_segments;
+    std::list<Ind> m_segments;
     Direction m_currentDirection;
 
     void handleTimeoutInd();
@@ -56,18 +50,18 @@ private:
     void handleFoodResp(std::unique_ptr<Event>);
     void handlePauseInd(std::unique_ptr<Event>);
 
-    bool isSegmentAtPosition(int x, int y) const;
-    Segment calculateNewHead() const;
-    void updateSegmentsIfSuccessfullMove(Segment const& newHead);
-    void addHeadSegment(Segment const& newHead);
-    void removeTailSegmentIfNotScored(Segment const& newHead);
+    bool isSegmentAtPosition(Ind cord) const;
+    Ind& calculateNewHead() const;
+    void updateSegmentsIfSuccessfullMove(Ind const& newHead);
+    void addHeadSegment(Ind const& newHead);
+    void removeTailSegmentIfNotScored(Ind const& newHead);
     void removeTailSegment();
 
-    bool isPositionOutsideMap(int x, int y) const;
+    bool isPositionOutsideMap(Ind cord) const;
 
-    void updateFoodPosition(int x, int y, std::function<void()> clearPolicy);
+    void updateFoodPosition(Ind& cord, std::function<void()> clearPolicy);
     void sendClearOldFood();
-    void sendPlaceNewFood(int x, int y);
+    void sendPlaceNewFood(Ind& cord);
 
     bool m_paused;
 };

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.14.1, 2021-12-10T16:51:27. -->
+<!-- Written by QtCreator 4.14.1, 2021-12-10T18:26:29. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -64,7 +64,52 @@
     <value type="bool" key="AutoTest.Framework.QtQuickTest">true</value>
     <value type="bool" key="AutoTest.Framework.QtTest">true</value>
    </valuemap>
-   <valuemap type="QVariantMap" key="AutoTest.CheckStates"/>
+   <valuemap type="QVariantMap" key="AutoTest.CheckStates">
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerPauseTestSuite.cpp:PauseSnakeTest">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerPauseTestSuite.cpp:pauseEventShouldNotBeUnexpected">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerPauseTestSuite.cpp:whenNoLongerPausedSnakeShouldMoveAgain">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerPauseTestSuite.cpp:whenPausedDirectionChangeRequestsShouldBeIgnored">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerPauseTestSuite.cpp:whenPausedFoodPositionChangeShouldBeStillProcessed">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerPauseTestSuite.cpp:whenPausedFoodPositionChangeShouldBeStillProcessed_FoodRespCase">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerPauseTestSuite.cpp:whenPausedSnakeShouldNotBiteItself">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerPauseTestSuite.cpp:whenPausedSnakeShouldNotHitTheWall">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerPauseTestSuite.cpp:whenPausedSnakeShouldNotMove">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:SnakeBorderTest">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:SnakeDirectionChangeTest">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:SnakeDirectionsTest">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:SnakeEatTestSuite">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:SnakeMoveTest">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:SnakeNewFoodTest">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:SnakeTailbitingTest">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:SnakeTest">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_EmptyConfig_ThrowsException">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_IfFoodEncountered_SendFoodRequestAndScoreIndication">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_LackOfControlLetters_ThrowsException_MissingF">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_LackOfControlLetters_ThrowsException_MissingS">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_LackOfControlLetters_ThrowsException_MissingW">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_LackOfSnakeDirection_ThrowsException">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_ReachingLeftBorder_SendLooseInd">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_ReachingLowerBorder_SendLooseInd">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_ReachingRightBorder_SendLooseInd">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_ReachingUpperBorder_SendLooseInd">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_ReceiveFoodIndDetectsCollision_ThenRequestNewFood">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_ReceiveFoodInd_ClearOldFoodAndPlaceNewOne">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_ReceiveFoodRespDetectsCollision_ThenRequestNewFood">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_ReceiveFoodResp_PlaceFoodInCell">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_UnexpectedEvent_ThrowsException">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_WhenBitesOwnTail_GameIsLost">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_afterTimerEvents_SnakeMoves">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_directionChangesAreNotEnqueued">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_parallelDirectionChangeIsForbidden">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_perpendicularDirectionChangeIsAllowed">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_snakeDirectionDown_AddsSegmentWithIncreasedY">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_snakeDirectionLeft_AddsSegmentWithDecreasedX">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_snakeDirectionRight_AddsSegmentWithIncreasedX">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerTestSuite.cpp:test_snakeDirectionUp_AddsSegmentWithDecreasedY">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerWrongFoodLocation.cpp:SnakeTestWrongFoodLocation">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerWrongFoodLocation.cpp:test_foodIndWrongCoordinates">Checked</value>
+    <value type="Qt::CheckState" key="/home/paro/NokiaGitFiles/SnakeController/Tests/SnakeControllerWrongFoodLocation.cpp:test_foodRespWrongCoordinates">Checked</value>
+   </valuemap>
    <value type="int" key="AutoTest.RunAfterBuild">0</value>
    <value type="bool" key="AutoTest.UseGlobal">true</value>
    <valuelist type="QVariantList" key="ClangCodeModel.CustomCommandLineKey"/>
@@ -415,12 +460,15 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.CustomExecutableRunConfiguration</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey"></value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">SnakeController_UT</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.SnakeController_UT</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">SnakeController_UT</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/home/paro/build-NokiaGitFiles-Zaimportowany_zestaw_narz_dzi-Debug/SnakeController</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

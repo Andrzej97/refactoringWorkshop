@@ -13,6 +13,7 @@ enum Direction
     Direction_RIGHT = 0b11
 };
 
+
 struct DirectionInd
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x10;
@@ -33,21 +34,27 @@ enum Cell
     Cell_SNAKE
 };
 
-struct DisplayInd
+struct Ind{
+    std::pair<int, int> cords;
+    std::pair<int, int>& operator=(Ind& s){ return cords = std::make_pair(s.cords.first, s.cords.second); }
+    std::pair<int, int>& operator=(std::pair<int, int> s){ return cords = s; }
+    
+};
+
+inline bool operator==(const Ind& s, const Ind& s2){ return s.cords == s2.cords; }
+inline bool operator>=(const Ind& s, const Ind& s2){ return s.cords.first >= s2.cords.first or s2.cords.second >= s2.cords.second; }
+
+
+struct DisplayInd : public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x30;
 
-    int x;
-    int y;
     Cell value;
 };
 
-struct FoodInd
+struct FoodInd : public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x40;
-
-    int x;
-    int y;
 };
 
 struct FoodReq
@@ -55,12 +62,9 @@ struct FoodReq
     static constexpr std::uint32_t MESSAGE_ID = 0x41;
 };
 
-struct FoodResp
+struct FoodResp : public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x42;
-
-    int x;
-    int y;
 };
 
 struct ScoreInd
