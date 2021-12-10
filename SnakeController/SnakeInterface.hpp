@@ -34,26 +34,43 @@ enum Cell
     Cell_SNAKE
 };
 
-struct Ind{
-    std::pair<int, int> cords;
-    std::pair<int, int>& operator=(Ind& s){ return cords = std::make_pair(s.cords.first, s.cords.second); }
-    std::pair<int, int>& operator=(std::pair<int, int> s){ return cords = s; }
+class Point{
+public:
+    Point() : x(0), y(0) {}
+    Point(int _x, int _y): x(_x), y(_y) {}
+    //Point(std::pair<int, int>& cord) : x(cord.first), y(cord.second) {}
     
+    int x;
+    int y;
+
+    void setPoint(int& _x, int& _y){ x=_x; y=_y; }
+    virtual void setPoint(Point p){ x=p.x; y=p.y; }
 };
 
-inline bool operator==(const Ind& s, const Ind& s2){ return s.cords == s2.cords; }
-inline bool operator>=(const Ind& s, const Ind& s2){ return s.cords.first >= s2.cords.first or s2.cords.second >= s2.cords.second; }
+inline bool operator==(const Point& s, const Point& s2){ return s.x == s2.x and s.y == s2.y; }
+inline bool operator>=(const Point& s, const Point& s2){ return s.x >= s2.x or s.y >= s2.y; }
 
 
-struct DisplayInd : public Ind
-{
+class DisplayInd : public Point
+{   
+public:
+    DisplayInd() : Point() {}
+    DisplayInd(int x, int y) : Point(x,y) {}
+    //DisplayInd(std::pair<int, int>& cord) : Point(cord) {}
+    void setPoint(Point p) { x=p.x; y=p.y; }
     static constexpr std::uint32_t MESSAGE_ID = 0x30;
 
     Cell value;
 };
 
-struct FoodInd : public Ind
+class FoodInd : public Point
 {
+public:
+    FoodInd() : Point() {}
+    FoodInd(int x, int y) : Point(x,y) {}
+    //FoodInd(std::pair<int, int>& cord) : Point(cord) {}
+
+    void setPoint(Point p){ x=p.x; y=p.y; }
     static constexpr std::uint32_t MESSAGE_ID = 0x40;
 };
 
@@ -62,8 +79,14 @@ struct FoodReq
     static constexpr std::uint32_t MESSAGE_ID = 0x41;
 };
 
-struct FoodResp : public Ind
+class FoodResp : public Point
 {
+public:
+    FoodResp() : Point() {}
+    FoodResp(int x, int y) : Point(x,y) {}
+    //FoodResp(std::pair<int, int>& cord) : Point(cord) {}
+
+    void setPoint(Point p){ x=p.x; y=p.y; }
     static constexpr std::uint32_t MESSAGE_ID = 0x42;
 };
 

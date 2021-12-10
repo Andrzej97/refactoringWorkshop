@@ -38,30 +38,30 @@ private:
     IPort& m_foodPort;
     IPort& m_scorePort;
 
-    Ind m_mapDimension;
-    Ind m_foodPosition;
+    Point m_mapDimension;
+    Point m_foodPosition;
 
-    std::list<Ind> m_segments;
+    std::list<Point> m_segments;
     Direction m_currentDirection;
 
     void handleTimeoutInd();
     void handleDirectionInd(std::unique_ptr<Event>);
     void handleFoodInd(std::unique_ptr<Event>);
     void handleFoodResp(std::unique_ptr<Event>);
-    void handlePauseInd(std::unique_ptr<Event>);
+    void handlePauseInd();
 
-    bool isSegmentAtPosition(Ind cord) const;
-    Ind& calculateNewHead() const;
-    void updateSegmentsIfSuccessfullMove(Ind const& newHead);
-    void addHeadSegment(Ind const& newHead);
-    void removeTailSegmentIfNotScored(Ind const& newHead);
+    bool isSegmentAtPosition(Point cord) const;
+    Point calculateNewHead() const;
+    void updateSegmentsIfSuccessfullMove(Point const& newHead);
+    void addHeadSegment(Point const& newHead);
+    void removeTailSegmentIfNotScored(Point const& newHead);
     void removeTailSegment();
 
-    bool isPositionOutsideMap(Ind cord) const;
+    bool isPositionOutsideMap(Point cord) const;
 
-    void updateFoodPosition(Ind& cord, std::function<void()> clearPolicy);
+    void updateFoodPosition(Point& cord, std::function<void()> clearPolicy);
     void sendClearOldFood();
-    void sendPlaceNewFood(Ind& cord);
+    void sendPlaceNewFood(Point& cord);
 
     bool m_paused;
 };

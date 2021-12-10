@@ -30,8 +30,8 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     istr >> w >> width >> height >> f >> foodX >> foodY >> s;
 
     if (w == 'W' and f == 'F' and s == 'S') {
-        m_mapDimension = std::make_pair(width, height);
-        m_foodPosition = std::make_pair(foodX, foodY);
+        m_mapDimension.setPoint(width, height);
+        m_foodPosition.setPoint(foodX, foodY);
 
         istr >> d;
         switch (d) {
@@ -53,8 +53,8 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
         istr >> length;
 
         while (length--) {
-            Ind seg;
-            istr >> seg.cords.first >> seg.cords.second;
+            Point seg;
+            istr >> seg.x >> seg.y;
             m_segments.push_back(seg);
         }
     } else {
@@ -62,23 +62,23 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     }
 }
 
-bool Controller::isSegmentAtPosition(Ind cord) const
+bool Controller::isSegmentAtPosition(Point cord) const
 {
     return m_segments.end() !=  std::find_if(m_segments.cbegin(), m_segments.cend(),
         [cord](auto const& segment){ return segment == cord; });
 }
 
-bool Controller::isPositionOutsideMap(Ind cord) const
+bool Controller::isPositionOutsideMap(Point cord) const
 {
-    return cord.cords.first < 0 or cord.cords.second< 0 or cord >= m_mapDimension;
+    return cord.x < 0 or cord.y < 0 or cord >= m_mapDimension;
 }
 
-void Controller::sendPlaceNewFood(Ind& cord)
+void Controller::sendPlaceNewFood(Point& cord)
 {
     m_foodPosition = cord;
 
     DisplayInd placeNewFood;
-    placeNewFood.cords = cord.cords;
+    placeNewFood.setPoint(cord);
     placeNewFood.value = Cell_FOOD;
 
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(placeNewFood));
@@ -87,7 +87,7 @@ void Controller::sendPlaceNewFood(Ind& cord)
 void Controller::sendClearOldFood()
 {
     DisplayInd clearOldFood;
-    clearOldFood.cords = m_foodPosition.cords;
+    clearOldFood.setPoint(m_foodPosition);
     clearOldFood.value = Cell_FREE;
 
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(clearOldFood));
@@ -117,13 +117,13 @@ bool perpendicular(Direction dir1, Direction dir2)
 }
 } // namespace
 
-Ind& Controller::calculateNewHead() const
+Point Controller::calculateNewHead() const
 {
-    Ind const& currentHead = m_segments.front();
+    Point const& currentHead = m_segments.front();
 
-    Ind newHead = currentHead;
-    newHead.cords.first += (isHorizontal(m_currentDirection) ? isPositive(m_currentDirection) ? 1 : -1 : 0);
-    newHead.cords.second += (isVertical(m_currentDirection) ? isPositive(m_currentDirection) ? 1 : -1 : 0);
+    Point newHead(currentHead);
+    newHead.x += (isHorizontal(m_currentDirection) ? isPositive(m_currentDirection) ? 1 : -1 : 0);
+    newHead.y += (isVertical(m_currentDirection) ? isPositive(m_currentDirection) ? 1 : -1 : 0);
 
     return newHead;
 }
@@ -133,25 +133,25 @@ void Controller::removeTailSegment()
     auto tail = m_segments.back();
 
     DisplayInd l_evt;
-    l_evt.cords = tail.cords;
+    l_evt.setPoint(tail);
     l_evt.value = Cell_FREE;
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
 
     m_segments.pop_back();
 }
 
-void Controller::addHeadSegment(Ind const& newHead)
+void Controller::addHeadSegment(Point const& newHead)
 {
     m_segments.push_front(newHead);
 
     DisplayInd placeNewHead;
-    placeNewHead.cords = newHead.cords;
+    placeNewHead.setPoint(newHead);
     placeNewHead.value = Cell_SNAKE;
 
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(placeNewHead));
 }
 
-void Controller::removeTailSegmentIfNotScored(Ind const& newHead)
+void Controller::removeTailSegmentIfNotScored(Point const& newHead)
 {
     if (newHead == m_foodPosition) {
         m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
@@ -161,7 +161,7 @@ void Controller::removeTailSegmentIfNotScored(Ind const& newHead)
     }
 }
 
-void Controller::updateSegmentsIfSuccessfullMove(Ind const& newHead)
+void Controller::updateSegmentsIfSuccessfullMove(Point const& newHead)
 {
     if (isSegmentAtPosition(newHead) or isPositionOutsideMap(newHead)) {
         m_scorePort.send(std::make_unique<EventT<LooseInd>>());
@@ -185,7 +185,7 @@ void Controller::handleDirectionInd(std::unique_ptr<Event> e)
     }
 }
 
-void Controller::updateFoodPosition(Ind& cord, std::function<void()> clearPolicy)
+void Controller::updateFoodPosition(Point& cord, std::function<void()> clearPolicy)
 {
     if (isSegmentAtPosition(cord) or isPositionOutsideMap(cord)) {
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
@@ -210,7 +210,7 @@ void Controller::handleFoodResp(std::unique_ptr<Event> e)
     updateFoodPosition(requestedFood, []{});
 }
 
-void Controller::handlePauseInd(std::unique_ptr<Event> e)
+void Controller::handlePauseInd()
 {
     m_paused = not m_paused;
 }
@@ -233,7 +233,7 @@ void Controller::receive(std::unique_ptr<Event> e)
         case FoodResp::MESSAGE_ID:
             return handleFoodResp(std::move(e));
         case PauseInd::MESSAGE_ID:
-            return handlePauseInd(std::move(e));
+            return handlePauseInd();
         default:
             throw UnexpectedEventException();
     }
