@@ -1,8 +1,8 @@
 #pragma once
 
-#include <type_traits>
-
 #include "Event.hpp"
+
+#include <type_traits>
 
 template <class T>
 class EventT : public Event

@@ -1,13 +1,10 @@
-#include "SnakeController.hpp"
-
 #include "EventT.hpp"
+#include "Mocks/EventMatchers.hpp"
+#include "Mocks/PortMock.hpp"
+#include "SnakeController.hpp"
+#include "SnakeControllerConfigBuilder.hpp"
 
 #include <gtest/gtest.h>
-
-#include "Mocks/PortMock.hpp"
-#include "Mocks/EventMatchers.hpp"
-
-#include "SnakeControllerConfigBuilder.hpp"
 
 using namespace ::testing;
 

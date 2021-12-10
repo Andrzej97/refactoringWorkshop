@@ -1,11 +1,9 @@
+#include "EventT.hpp"
+#include "Mocks/EventMatchers.hpp"
+#include "Mocks/PortMock.hpp"
 #include "SnakeController.hpp"
 
-#include "EventT.hpp"
-
 #include <gtest/gtest.h>
-
-#include "Mocks/PortMock.hpp"
-#include "Mocks/EventMatchers.hpp"
 
 using namespace ::testing;
 

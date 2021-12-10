@@ -1,9 +1,8 @@
-#include <sstream>
-
-#include <vector>
-#include <tuple>
-
 #include "SnakeInterface.hpp"
+
+#include <sstream>
+#include <tuple>
+#include <vector>
 
 namespace Snake
 {

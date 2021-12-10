@@ -1,8 +1,8 @@
 #pragma once
 
-#include <gmock/gmock.h>
-
 #include "IPort.hpp"
+
+#include <gmock/gmock.h>
 
 namespace Snake
 {
