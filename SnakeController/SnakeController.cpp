@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include<iostream>
 
 #include "EventT.hpp"
 #include "IPort.hpp"
@@ -70,7 +71,7 @@ bool Controller::isSegmentAtPosition(int x, int y) const
 
 bool Controller::isPositionOutsideMap(int x, int y) const
 {
-    return x < 0 or y < 0 or x >= m_mapDimension.first or y >= m_mapDimension.second;
+    return x < 0 || y < 0 || x >= m_mapDimension.first || y >= m_mapDimension.second;
 }
 
 void Controller::sendPlaceNewFood(int x, int y)
@@ -195,6 +196,10 @@ void Controller::updateFoodPosition(int x, int y, std::function<void()> clearPol
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
         return;
     }
+    if(isPositionOutsideMap(x,y)){
+        m_foodPort.send(std::make_unique<EventT<FoodReq>>());
+        return;
+    }
 
     clearPolicy();
     sendPlaceNewFood(x, y);
@@ -203,14 +208,12 @@ void Controller::updateFoodPosition(int x, int y, std::function<void()> clearPol
 void Controller::handleFoodInd(std::unique_ptr<Event> e)
 {
     auto receivedFood = payload<FoodInd>(*e);
-
     updateFoodPosition(receivedFood.x, receivedFood.y, std::bind(&Controller::sendClearOldFood, this));
 }
 
 void Controller::handleFoodResp(std::unique_ptr<Event> e)
 {
     auto requestedFood = payload<FoodResp>(*e);
-
     updateFoodPosition(requestedFood.x, requestedFood.y, []{});
 }
 
