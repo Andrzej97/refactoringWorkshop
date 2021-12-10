@@ -75,6 +75,7 @@ bool Controller::isPositionOutsideMap(int x, int y) const
 
 void Controller::sendPlaceNewFood(int x, int y)
 {
+
     m_foodPosition = std::make_pair(x, y);
 
     DisplayInd placeNewFood;
@@ -83,6 +84,7 @@ void Controller::sendPlaceNewFood(int x, int y)
     placeNewFood.value = Cell_FOOD;
 
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(placeNewFood));
+
 }
 
 void Controller::sendClearOldFood()
@@ -192,6 +194,11 @@ void Controller::handleDirectionInd(std::unique_ptr<Event> e)
 void Controller::updateFoodPosition(int x, int y, std::function<void()> clearPolicy)
 {
     if (isSegmentAtPosition(x, y)) {
+        m_foodPort.send(std::make_unique<EventT<FoodReq>>());
+        return;
+    }
+    if(isPositionOutsideMap(x, y))
+    {
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
         return;
     }
