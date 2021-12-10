@@ -6,13 +6,15 @@
 
 #include "IEventHandler.hpp"
 #include "SnakeInterface.hpp"
-#include <stdexcept>
 
 class Event;
 class IPort;
 
 namespace Snake
 {
+class Segments;
+class World;
+
 struct ConfigurationError : std::logic_error
 {
     ConfigurationError();
@@ -27,6 +29,7 @@ class Controller : public IEventHandler
 {
 public:
     Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePort, std::string const& p_config);
+    ~Controller();
 
     Controller(Controller const& p_rhs) = delete;
     Controller& operator=(Controller const& p_rhs) = delete;
@@ -38,11 +41,13 @@ private:
     IPort& m_foodPort;
     IPort& m_scorePort;
 
+
     Point m_mapDimension;
     Point m_foodPosition;
 
     std::list<Point> m_segments;
     Direction m_currentDirection;
+
 
     void handleTimeoutInd();
     void handleDirectionInd(std::unique_ptr<Event>);
@@ -60,6 +65,7 @@ private:
     bool isPositionOutsideMap(Point cord) const;
 
     void updateFoodPosition(Point& cord, std::function<void()> clearPolicy);
+
     void sendClearOldFood();
     void sendPlaceNewFood(Point& cord);
 
