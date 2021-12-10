@@ -4,10 +4,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(SNAKE_SOURCES
     SnakeController.cpp
+    SnakeSegments.cpp
+    SnakeMap.cpp
 )
 set(SNAKE_HEADERS
     SnakeController.hpp
     SnakeInterface.hpp
+    SnakeSegments.hpp
+    SnakeMap.hpp
 )
 add_library(${TARGET_NAME} STATIC ${SNAKE_SOURCES} ${SNAKE_HEADERS})
 target_link_libraries(${TARGET_NAME} DynamicEvents)

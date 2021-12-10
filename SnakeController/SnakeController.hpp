@@ -6,6 +6,8 @@
 
 #include "IEventHandler.hpp"
 #include "SnakeInterface.hpp"
+#include "SnakeSegments.hpp"
+#include "SnakeMap.hpp"
 #include <stdexcept>
 
 class Event;
@@ -38,16 +40,9 @@ private:
     IPort& m_foodPort;
     IPort& m_scorePort;
 
-    std::pair<int, int> m_mapDimension;
-    std::pair<int, int> m_foodPosition;
+    SnakeMap m_snakeMap;
+    SnakeSegments m_snakeSegments;
 
-    struct Segment
-    {
-        int x;
-        int y;
-    };
-
-    std::list<Segment> m_segments;
     Direction m_currentDirection;
 
     void handleTimeoutInd();
@@ -56,18 +51,14 @@ private:
     void handleFoodResp(std::unique_ptr<Event>);
     void handlePauseInd(std::unique_ptr<Event>);
 
-    bool isSegmentAtPosition(int x, int y) const;
-    Segment calculateNewHead() const;
     void updateSegmentsIfSuccessfullMove(Segment const& newHead);
     void addHeadSegment(Segment const& newHead);
     void removeTailSegmentIfNotScored(Segment const& newHead);
     void removeTailSegment();
 
-    bool isPositionOutsideMap(int x, int y) const;
-
-    void updateFoodPosition(int x, int y, std::function<void()> clearPolicy);
+    void updateFoodPosition(Segment const& seg, std::function<void()> clearPolicy);
     void sendClearOldFood();
-    void sendPlaceNewFood(int x, int y);
+    void sendPlaceNewFood(Segment const& seg);
 
     bool m_paused;
 };
