@@ -70,7 +70,7 @@ bool Controller::isSegmentAtPosition(int x, int y) const
 
 bool Controller::isPositionOutsideMap(int x, int y) const
 {
-    return x < 0 or y < 0 or x >= m_mapDimension.first or y >= m_mapDimension.second;
+    return x <= 0 or y <= 0 or x >= m_mapDimension.first or y >= m_mapDimension.second;
 }
 
 void Controller::sendPlaceNewFood(int x, int y)
@@ -191,7 +191,7 @@ void Controller::handleDirectionInd(std::unique_ptr<Event> e)
 
 void Controller::updateFoodPosition(int x, int y, std::function<void()> clearPolicy)
 {
-    if (isSegmentAtPosition(x, y)) {
+    if (isSegmentAtPosition(x, y) or isPositionOutsideMap(x,y)) {
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
         return;
     }
