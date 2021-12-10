@@ -4,6 +4,7 @@
 #include <tuple>
 
 #include "SnakeInterface.hpp"
+#include "WorldInterface.hpp"
 
 namespace Snake
 {
