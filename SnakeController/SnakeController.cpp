@@ -204,14 +204,32 @@ void Controller::handleFoodInd(std::unique_ptr<Event> e)
 {
     auto receivedFood = payload<FoodInd>(*e);
 
-    updateFoodPosition(receivedFood.x, receivedFood.y, std::bind(&Controller::sendClearOldFood, this));
+
+    if(isPositionOutsideMap(receivedFood.x,receivedFood.y))
+    {
+        m_foodPort.send(std::make_unique<EventT<FoodReq>>());
+
+    }else
+    {
+        updateFoodPosition(receivedFood.x, receivedFood.y, std::bind(&Controller::sendClearOldFood, this));
+    }
+
 }
 
 void Controller::handleFoodResp(std::unique_ptr<Event> e)
 {
     auto requestedFood = payload<FoodResp>(*e);
 
-    updateFoodPosition(requestedFood.x, requestedFood.y, []{});
+
+
+    if(isPositionOutsideMap(requestedFood.x,requestedFood.y))
+    {
+        m_foodPort.send(std::make_unique<EventT<FoodReq>>());
+
+    }else
+    {
+         updateFoodPosition(requestedFood.x, requestedFood.y, []{});
+    }
 }
 
 void Controller::handlePauseInd(std::unique_ptr<Event> e)
