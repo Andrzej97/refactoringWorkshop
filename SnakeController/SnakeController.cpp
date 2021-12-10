@@ -191,6 +191,8 @@ void Controller::handleDirectionInd(std::unique_ptr<Event> e)
 
 void Controller::updateFoodPosition(int x, int y, std::function<void()> clearPolicy)
 {
+    if (x>=m_mapDimension.first or y>= m_mapDimension.second) return m_foodPort.send(std::make_unique<EventT<FoodReq>>());
+    if (x<=0 or y<= 0) return m_foodPort.send(std::make_unique<EventT<FoodReq>>());
     if (isSegmentAtPosition(x, y)) {
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
         return;
