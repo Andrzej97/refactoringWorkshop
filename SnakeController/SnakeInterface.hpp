@@ -1,9 +1,25 @@
 #pragma once
 
 #include <cstdint>
+#include <stdexcept>
 
 namespace Snake
 {
+struct ConfigurationError : std::logic_error
+{
+    ConfigurationError()
+        : std::logic_error("Bad configuration of Snake::Controller.")
+    {}
+};
+
+struct UnexpectedEventException : std::runtime_error
+{
+    UnexpectedEventException()
+        : std::runtime_error("Unexpected event received!")
+    {}
+};
+
+using Coordinates = std::pair<int, int>;
 
 enum Direction
 {

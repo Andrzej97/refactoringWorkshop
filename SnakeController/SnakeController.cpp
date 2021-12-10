@@ -8,13 +8,6 @@
 
 namespace Snake
 {
-ConfigurationError::ConfigurationError()
-    : std::logic_error("Bad configuration of Snake::Controller.")
-{}
-
-UnexpectedEventException::UnexpectedEventException()
-    : std::runtime_error("Unexpected event received!")
-{}
 
 Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePort, std::string const& p_config)
     : m_displayPort(p_displayPort),
@@ -23,60 +16,15 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
       m_paused(false)
 {
     std::istringstream istr(p_config);
-    char w, f, s, d;
-
-    int width, height, length;
-    int foodX, foodY;
-    istr >> w >> width >> height >> f >> foodX >> foodY >> s;
-
-    if (w == 'W' and f == 'F' and s == 'S') {
-        m_mapDimension = std::make_pair(width, height);
-        m_foodPosition = std::make_pair(foodX, foodY);
-
-        istr >> d;
-        switch (d) {
-            case 'U':
-                m_currentDirection = Direction_UP;
-                break;
-            case 'D':
-                m_currentDirection = Direction_DOWN;
-                break;
-            case 'L':
-                m_currentDirection = Direction_LEFT;
-                break;
-            case 'R':
-                m_currentDirection = Direction_RIGHT;
-                break;
-            default:
-                throw ConfigurationError();
-        }
-        istr >> length;
-
-        while (length--) {
-            Segment seg;
-            istr >> seg.x >> seg.y;
-            m_segments.push_back(seg);
-        }
-    } else {
-        throw ConfigurationError();
-    }
+    m_snakeWorld = std::make_unique<SnakeWorld>(istr);
+    m_snakeBody  = std::make_unique<SnakeBody>(istr);
 }
 
-bool Controller::isSegmentAtPosition(int x, int y) const
-{
-    return m_segments.end() !=  std::find_if(m_segments.cbegin(), m_segments.cend(),
-        [x, y](auto const& segment){ return segment.x == x and segment.y == y; });
-}
 
-bool Controller::isPositionOutsideMap(int x, int y) const
+void Controller::sendPlaceNewFood(Coordinates position)
 {
-    return x < 0 or y < 0 or x >= m_mapDimension.first or y >= m_mapDimension.second;
-}
-
-void Controller::sendPlaceNewFood(int x, int y)
-{
-    m_foodPosition = std::make_pair(x, y);
-
+    m_snakeWorld->setFoodPosition(position);
+    auto [x,y] = position;
     DisplayInd placeNewFood;
     placeNewFood.x = x;
     placeNewFood.y = y;
@@ -88,77 +36,45 @@ void Controller::sendPlaceNewFood(int x, int y)
 
 void Controller::sendClearOldFood()
 {
+
+    auto foodPosition = m_snakeWorld->getFoodPosition();
+    auto [x,y] = foodPosition;
     DisplayInd clearOldFood;
-    clearOldFood.x = m_foodPosition.first;
-    clearOldFood.y = m_foodPosition.second;
+    clearOldFood.x = x;
+    clearOldFood.y = y;
     clearOldFood.value = Cell_FREE;
 
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(clearOldFood));
 }
 
-namespace
-{
-bool isHorizontal(Direction direction)
-{
-    return Direction_LEFT == direction or Direction_RIGHT == direction;
-}
-
-bool isVertical(Direction direction)
-{
-    return Direction_UP == direction or Direction_DOWN == direction;
-}
-
-bool isPositive(Direction direction)
-{
-    return (isVertical(direction) and Direction_DOWN == direction)
-        or (isHorizontal(direction) and Direction_RIGHT == direction);
-}
-
-bool perpendicular(Direction dir1, Direction dir2)
-{
-    return isHorizontal(dir1) == isVertical(dir2);
-}
-} // namespace
-
-Controller::Segment Controller::calculateNewHead() const
-{
-    Segment const& currentHead = m_segments.front();
-
-    Segment newHead;
-    newHead.x = currentHead.x + (isHorizontal(m_currentDirection) ? isPositive(m_currentDirection) ? 1 : -1 : 0);
-    newHead.y = currentHead.y + (isVertical(m_currentDirection) ? isPositive(m_currentDirection) ? 1 : -1 : 0);
-
-    return newHead;
-}
-
 void Controller::removeTailSegment()
 {
-    auto tail = m_segments.back();
-
+    auto tail = m_snakeBody->popTailSegment();
+    auto [x,y] = tail.position;
     DisplayInd l_evt;
-    l_evt.x = tail.x;
-    l_evt.y = tail.y;
+    l_evt.x = x;
+    l_evt.y = y;
     l_evt.value = Cell_FREE;
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
 
-    m_segments.pop_back();
 }
 
-void Controller::addHeadSegment(Segment const& newHead)
+void Controller::addHeadSegment(SnakeBody::Segment const& newHead)
 {
-    m_segments.push_front(newHead);
+    m_snakeBody->setNewHead(newHead);
 
+    auto [x,y] = newHead.position;
     DisplayInd placeNewHead;
-    placeNewHead.x = newHead.x;
-    placeNewHead.y = newHead.y;
+    placeNewHead.x = x;
+    placeNewHead.y = y;
     placeNewHead.value = Cell_SNAKE;
 
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(placeNewHead));
 }
 
-void Controller::removeTailSegmentIfNotScored(Segment const& newHead)
+void Controller::removeTailSegmentIfNotScored(SnakeBody::Segment const& newHead)
 {
-    if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
+    if (newHead.position == m_snakeWorld->getFoodPosition()) {
         m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
     } else {
@@ -166,9 +82,10 @@ void Controller::removeTailSegmentIfNotScored(Segment const& newHead)
     }
 }
 
-void Controller::updateSegmentsIfSuccessfullMove(Segment const& newHead)
+void Controller::updateSegmentsIfSuccessfullMove(SnakeBody::Segment const& newHead)
 {
-    if (isSegmentAtPosition(newHead.x, newHead.y) or isPositionOutsideMap(newHead.x, newHead.y)) {
+    if (    m_snakeBody->isSegmentAtPosition(newHead.position)
+         or m_snakeWorld->isPositionOutsideMap(newHead.position) ) {
         m_scorePort.send(std::make_unique<EventT<LooseInd>>());
     } else {
         addHeadSegment(newHead);
@@ -178,42 +95,41 @@ void Controller::updateSegmentsIfSuccessfullMove(Segment const& newHead)
 
 void Controller::handleTimeoutInd()
 {
-    updateSegmentsIfSuccessfullMove(calculateNewHead());
+    updateSegmentsIfSuccessfullMove(m_snakeBody->calculateNewHead());
 }
 
 void Controller::handleDirectionInd(std::unique_ptr<Event> e)
 {
     auto direction = payload<DirectionInd>(*e).direction;
-
-    if (perpendicular(m_currentDirection, direction)) {
-        m_currentDirection = direction;
-    }
+    m_snakeBody->changeDirection(direction);
 }
 
-void Controller::updateFoodPosition(int x, int y, std::function<void()> clearPolicy)
+void Controller::updateFoodPosition(Coordinates foodPosition, std::function<void()> clearPolicy)
 {
 
-    if (isPositionOutsideMap(x,y) or isSegmentAtPosition(x, y)) {
+    if (m_snakeWorld->isPositionOutsideMap(foodPosition) or m_snakeBody->isSegmentAtPosition(foodPosition)) {
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
         return;
     }
 
     clearPolicy();
-    sendPlaceNewFood(x, y);
+    sendPlaceNewFood(foodPosition);
 }
 
 void Controller::handleFoodInd(std::unique_ptr<Event> e)
 {
     auto receivedFood = payload<FoodInd>(*e);
+    Coordinates foodPosition = {receivedFood.x, receivedFood.y};
 
-    updateFoodPosition(receivedFood.x, receivedFood.y, std::bind(&Controller::sendClearOldFood, this));
+    updateFoodPosition(foodPosition, std::bind(&Controller::sendClearOldFood, this));
 }
 
 void Controller::handleFoodResp(std::unique_ptr<Event> e)
 {
     auto requestedFood = payload<FoodResp>(*e);
+    Coordinates foodPosition = {requestedFood.x, requestedFood.y};
 
-    updateFoodPosition(requestedFood.x, requestedFood.y, []{});
+    updateFoodPosition(foodPosition, []{});
 }
 
 void Controller::handlePauseInd(std::unique_ptr<Event> e)
