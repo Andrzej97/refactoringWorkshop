@@ -6,6 +6,7 @@
 
 #include "IEventHandler.hpp"
 #include "SnakeInterface.hpp"
+#include "SegmentsController.hpp"
 #include <stdexcept>
 
 class Event;
@@ -41,11 +42,11 @@ private:
     std::pair<int, int> m_mapDimension;
     std::pair<int, int> m_foodPosition;
 
-    struct Segment
-    {
-        int x;
-        int y;
-    };
+    //struct Segment
+    //{
+   //     int x;
+    //    int y;
+   // };
 
     std::list<Segment> m_segments;
     Direction m_currentDirection;
@@ -55,6 +56,11 @@ private:
     void handleFoodInd(std::unique_ptr<Event>);
     void handleFoodResp(std::unique_ptr<Event>);
     void handlePauseInd(std::unique_ptr<Event>);
+    DisplayInd returnFreeCell (Segment seg);
+    DisplayInd returnSnakeCell (Segment seg);
+    DisplayInd returnFoodCell (std::pair<int,int> seg);
+    Segment returnNewHead (Segment const currentHead);
+
 
     bool isSegmentAtPosition(int x, int y) const;
     Segment calculateNewHead() const;
