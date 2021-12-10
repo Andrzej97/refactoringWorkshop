@@ -37,6 +37,7 @@ private:
     void handleDirectionChange(const DirectionInd&);
     void handleFoodPositionChange(const FoodInd& receivedFood);
     void handleNewFood(const FoodResp& requestedFood);
+    void handlePauseInd(const PauseInd&);
 
     struct Segment
     {
@@ -49,6 +50,7 @@ private:
     bool doesCollideWithSnake(const Segment& newSegment) const;
     bool doesCollideWithWall(const Segment& newSegment) const;
     bool doesCollideWithFood(const Segment& newSegment) const;
+    bool systemStop = false; //(const Segment& newSegment) const;
 
     void notifyAboutFailure();
     void repaintTile(const Segment& position, Cell type);
@@ -60,6 +62,7 @@ private:
     IPort& m_displayPort;
     IPort& m_foodPort;
     IPort& m_scorePort;
+  //  IPort& m_stopPort;
 
     std::pair<int, int> m_mapDimension;
     std::pair<int, int> m_foodPosition;
