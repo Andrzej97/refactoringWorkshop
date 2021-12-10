@@ -1,5 +1,6 @@
 #include "SnakeController.hpp"
 
+#include <stdio.h>
 #include <algorithm>
 #include <sstream>
 
@@ -74,8 +75,10 @@ bool Controller::isPositionOutsideMap(int x, int y) const
 }
 
 void Controller::sendPlaceNewFood(int x, int y)
-{
+{   while(!(x < 0 or y < 0 or x >= m_mapDimension.first or y >= m_mapDimension.second)){
+        continue;
     m_foodPosition = std::make_pair(x, y);
+    }
 
     DisplayInd placeNewFood;
     placeNewFood.x = x;
