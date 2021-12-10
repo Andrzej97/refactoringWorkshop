@@ -1,4 +1,5 @@
 #include "SnakeController.hpp"
+#include "WorldController.hpp"
 
 #include "EventT.hpp"
 
@@ -25,10 +26,10 @@ struct SnakeBugTest : Test
 
     void configureSUT(std::string p_config)
     {
-        sut = std::make_unique<Controller>(displayPortMock, foodPortMock, scorePortMock, p_config);
+        sut = std::make_unique<SnakeController>(displayPortMock, foodPortMock, scorePortMock, p_config);
     }
 
-    std::unique_ptr<Controller> sut = nullptr;
+    std::unique_ptr<SnakeController> sut = nullptr;
 };
 
 typedef std::pair<int, int> TestValues;
@@ -45,20 +46,20 @@ struct SnakeTestWrongFoodLocation : SnakeBugTest, public WithParamInterface<Test
 
 TEST_P(SnakeTestWrongFoodLocation, test_foodIndWrongCoordinates)
 {
-    FoodInd l_foodInd;
+    World::FoodInd l_foodInd;
     l_foodInd.x = GetParam().first;
     l_foodInd.y = GetParam().second;
     EXPECT_CALL(foodPortMock, send_rvr(AnyFoodReq()));
-    sut->receive(std::make_unique<EventT<FoodInd>>(l_foodInd));
+    sut->receive(std::make_unique<EventT<World::FoodInd>>(l_foodInd));
 }
 
 TEST_P(SnakeTestWrongFoodLocation, test_foodRespWrongCoordinates)
 {
-    FoodResp l_foodResp;
+    World::FoodResp l_foodResp;
     l_foodResp.x = GetParam().first;
     l_foodResp.y = GetParam().second;
     EXPECT_CALL(foodPortMock, send_rvr(AnyFoodReq()));
-    sut->receive(std::make_unique<EventT<FoodResp>>(l_foodResp));
+    sut->receive(std::make_unique<EventT<World::FoodResp>>(l_foodResp));
 }
 
  // UTs to allign from extract-subclass 2 onward. To "turn them on" uncomment lines below.

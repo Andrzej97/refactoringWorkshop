@@ -1,4 +1,5 @@
 #include "SnakeController.hpp"
+#include "WorldController.hpp"
 
 #include "EventT.hpp"
 
@@ -25,10 +26,10 @@ struct PauseSnakeTest : Test
 
     void configureSUT(std::string p_config)
     {
-        sut = std::make_unique<Controller>(displayPortMock, foodPortMock, scorePortMock, p_config);
+        sut = std::make_unique<SnakeController>(displayPortMock, foodPortMock, scorePortMock, p_config);
     }
 
-    std::unique_ptr<Controller> sut = nullptr;
+    std::unique_ptr<SnakeController> sut = nullptr;
 };
 
 TEST_F(PauseSnakeTest, pauseEventShouldNotBeUnexpected)
@@ -54,8 +55,8 @@ TEST_F(PauseSnakeTest, whenNoLongerPausedSnakeShouldMoveAgain)
     sut->receive(pauseEvent.clone());
     sut->receive(pauseEvent.clone());
 
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(20, 20, Cell_FREE)));
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(21, 20, Cell_SNAKE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(20, 20, World::Cell_FREE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(21, 20, World::Cell_SNAKE)));
 
     sut->receive(te.clone());
 }
@@ -91,8 +92,8 @@ TEST_F(PauseSnakeTest, whenPausedDirectionChangeRequestsShouldBeIgnored)
 
     sut->receive(pauseEvent.clone());
 
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(2, 2, Cell_FREE)));
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(3, 2, Cell_SNAKE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(2, 2, World::Cell_FREE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(3, 2, World::Cell_SNAKE)));
 
     sut->receive(te.clone());
 }
@@ -103,20 +104,20 @@ TEST_F(PauseSnakeTest, whenPausedFoodPositionChangeShouldBeStillProcessed)
                  .setSnake({ConfigBuilder::Point{2,2}}).build());
 
     sut->receive(pauseEvent.clone());
-    EventT<FoodInd> foodPositionChange(FoodInd{4,2});
+    EventT<World::FoodInd> foodPositionChange(World::FoodInd{4,2});
 
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(3,2, Cell_FREE)));
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(4,2, Cell_FOOD)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(3,2, World::Cell_FREE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(4,2, World::Cell_FOOD)));
     sut->receive(foodPositionChange.clone());
 
     sut->receive(pauseEvent.clone());
 
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(2, 2, Cell_FREE)));
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(3, 2, Cell_SNAKE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(2, 2, World::Cell_FREE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(3, 2, World::Cell_SNAKE)));
 
     sut->receive(te.clone());
 
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(4, 2, Cell_SNAKE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(4, 2, World::Cell_SNAKE)));
     EXPECT_CALL(scorePortMock, send_rvr(AnyScoreInd()));
     EXPECT_CALL(foodPortMock, send_rvr(AnyFoodReq()));
 
@@ -130,19 +131,19 @@ TEST_F(PauseSnakeTest, whenPausedFoodPositionChangeShouldBeStillProcessed_FoodRe
 
     sut->receive(pauseEvent.clone());
 
-    EventT<FoodResp> foodPositionChange(FoodResp{4,2});
+    EventT<World::FoodResp> foodPositionChange(World::FoodResp{4,2});
 
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(4,2, Cell_FOOD)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(4,2, World::Cell_FOOD)));
     sut->receive(foodPositionChange.clone());
 
     sut->receive(pauseEvent.clone());
 
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(2, 2, Cell_FREE)));
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(3, 2, Cell_SNAKE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(2, 2, World::Cell_FREE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(3, 2, World::Cell_SNAKE)));
 
     sut->receive(te.clone());
 
-    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(4, 2, Cell_SNAKE)));
+    EXPECT_CALL(displayPortMock, send_rvr(DisplayIndEq(4, 2, World::Cell_SNAKE)));
     EXPECT_CALL(scorePortMock, send_rvr(AnyScoreInd()));
     EXPECT_CALL(foodPortMock, send_rvr(AnyFoodReq()));
 

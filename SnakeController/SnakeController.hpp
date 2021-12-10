@@ -6,6 +6,7 @@
 
 #include "IEventHandler.hpp"
 #include "SnakeInterface.hpp"
+#include "WorldInterface.hpp"
 #include <stdexcept>
 
 class Event;
@@ -23,13 +24,13 @@ struct UnexpectedEventException : std::runtime_error
     UnexpectedEventException();
 };
 
-class Controller : public IEventHandler
+class SnakeController : public IEventHandler
 {
 public:
-    Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePort, std::string const& p_config);
+    SnakeController(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePort, std::string const& p_config);
 
-    Controller(Controller const& p_rhs) = delete;
-    Controller& operator=(Controller const& p_rhs) = delete;
+    SnakeController(SnakeController const& p_rhs) = delete;
+    SnakeController& operator=(SnakeController const& p_rhs) = delete;
 
     void receive(std::unique_ptr<Event> e) override;
 
@@ -41,12 +42,6 @@ private:
     std::pair<int, int> m_mapDimension;
     std::pair<int, int> m_foodPosition;
 
-    struct Segment
-    {
-        int x;
-        int y;
-    };
-
     std::list<Segment> m_segments;
     Direction m_currentDirection;
 
@@ -54,7 +49,7 @@ private:
     void handleDirectionInd(std::unique_ptr<Event>);
     void handleFoodInd(std::unique_ptr<Event>);
     void handleFoodResp(std::unique_ptr<Event>);
-    void handlePauseInd(std::unique_ptr<Event>);
+    void handlePauseInd();
 
     bool isSegmentAtPosition(int x, int y) const;
     Segment calculateNewHead() const;
@@ -69,7 +64,7 @@ private:
     void sendClearOldFood();
     void sendPlaceNewFood(int x, int y);
 
-    bool m_paused;
+    bool m_paused{false};
 };
 
 } // namespace Snake
