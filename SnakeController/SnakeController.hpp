@@ -23,6 +23,13 @@ struct UnexpectedEventException : std::runtime_error
     UnexpectedEventException();
 };
 
+struct ControllerData{
+    char w, f, s, d;
+
+    int width, height, length;
+    int foodX, foodY;
+};
+
 class Controller : public IEventHandler
 {
 public:
@@ -68,6 +75,10 @@ private:
     void updateFoodPosition(int x, int y, std::function<void()> clearPolicy);
     void sendClearOldFood();
     void sendPlaceNewFood(int x, int y);
+
+    void setInitialDirection(std::istringstream& istr, char& d);
+    void setInitialShape(std::istringstream& istr, int& length);
+    void setInitialControllerData(std::istringstream& istr, ControllerData& data);
 
     bool m_paused;
 };

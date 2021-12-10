@@ -23,42 +23,49 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
       m_paused(false)
 {
     std::istringstream istr(p_config);
-    char w, f, s, d;
+    ControllerData data;
+    setInitialControllerData(istr,data);
+}
 
-    int width, height, length;
-    int foodX, foodY;
-    istr >> w >> width >> height >> f >> foodX >> foodY >> s;
+void Controller::setInitialControllerData(std::istringstream& istr, ControllerData& data){
+    istr >> data.w >> data.width >> data.height >> data.f >> data.foodX >> data.foodY >> data.s;
 
-    if (w == 'W' and f == 'F' and s == 'S') {
-        m_mapDimension = std::make_pair(width, height);
-        m_foodPosition = std::make_pair(foodX, foodY);
-
-        istr >> d;
-        switch (d) {
-            case 'U':
-                m_currentDirection = Direction_UP;
-                break;
-            case 'D':
-                m_currentDirection = Direction_DOWN;
-                break;
-            case 'L':
-                m_currentDirection = Direction_LEFT;
-                break;
-            case 'R':
-                m_currentDirection = Direction_RIGHT;
-                break;
-            default:
-                throw ConfigurationError();
-        }
-        istr >> length;
-
-        while (length--) {
-            Segment seg;
-            istr >> seg.x >> seg.y;
-            m_segments.push_back(seg);
-        }
+    if (data.w == 'W' and data.f == 'F' and data.s == 'S') {
+        m_mapDimension = std::make_pair(data.width, data.height);
+        m_foodPosition = std::make_pair(data.foodX, data.foodY);
+        setInitialDirection(istr, data.d);
+        setInitialShape(istr, data.length);
     } else {
         throw ConfigurationError();
+    }
+}
+
+void Controller::setInitialDirection(std::istringstream& istr, char& d){
+    istr >> d;
+    switch (d) {
+        case 'U':
+            m_currentDirection = Direction_UP;
+            break;
+        case 'D':
+            m_currentDirection = Direction_DOWN;
+            break;
+        case 'L':
+            m_currentDirection = Direction_LEFT;
+            break;
+        case 'R':
+            m_currentDirection = Direction_RIGHT;
+            break;
+        default:
+            throw ConfigurationError();
+    }
+}
+
+void Controller::setInitialShape(std::istringstream& istr, int& length){
+    istr >> length;
+    while (length--) {
+        Segment seg;
+        istr >> seg.x >> seg.y;
+        m_segments.push_back(seg);
     }
 }
 
