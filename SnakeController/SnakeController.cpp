@@ -155,6 +155,10 @@ void Controller::updateFoodPosition(int x, int y, std::function<void()> clearPol
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
         return;
     }
+    if(isPositionOutsideMap(x,y)){
+        m_foodPort.send(std::make_unique<EventT<FoodReq>>());
+        return;
+    }
 
     clearPolicy();
     sendPlaceNewFood(x, y);
